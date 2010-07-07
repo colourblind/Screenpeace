@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FillrateNomNomNom", "src\FillrateNomNomNom\FillrateNomNomNom.vcproj", "{899BF2A3-C978-429E-A362-2E8522899721}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		ScreensaverDebug|Win32 = ScreensaverDebug|Win32
+		ScreensaverRelease|Win32 = ScreensaverRelease|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{899BF2A3-C978-429E-A362-2E8522899721}.Debug|Win32.ActiveCfg = Debug|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.Debug|Win32.Build.0 = Debug|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.Release|Win32.ActiveCfg = Release|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.Release|Win32.Build.0 = Release|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverDebug|Win32.ActiveCfg = ScreensaverDebug|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverDebug|Win32.Build.0 = ScreensaverDebug|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverRelease|Win32.ActiveCfg = ScreensaverRelease|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
