@@ -6,6 +6,7 @@
 #include "cinder/Vector.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
+#include "Constants.h"
 #include "Particles.h"
 #include "Resources.h"
 
@@ -34,7 +35,7 @@ struct Light
 class FillrateNomNomNom : public APP_TYPE
 {
 public:
-    FillrateNomNomNom() : nextEvent_(100) { }
+    FillrateNomNomNom() : nextEvent_(1) { }
 
     virtual void setup();
     virtual void update();
@@ -47,13 +48,12 @@ private:
     float nextEvent_;
     CameraPersp camera_;
     std::deque<Light> lights_;
+    Timer timer_;
 };
 
 void FillrateNomNomNom::setup()
 {
     Rand::randomize();
-
-    setFrameRate(60);
 
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
 
@@ -64,7 +64,6 @@ void FillrateNomNomNom::setup()
     
     texture_ = gl::Texture(loadImage(loadResource(RES_PARTICLE_IMG)), format);
     texture_.enableAndBind();
-    gl::disableAlphaTest();
     gl::disableDepthRead();
     gl::disableDepthWrite();
     gl::enableAlphaBlending();
@@ -77,15 +76,17 @@ void FillrateNomNomNom::setup()
     emitter.MinInitialMass = 0.5f;
     emitter.MaxInitialMass = 2.5f;
     emitter.MinInitialSize = 1;
-    emitter.MaxInitialSize = 20;
+    emitter.MaxInitialSize = 10;
     emitter.InitialLife = -1;
     emitter.Frequency = 0;
-    particleSystem_.SpawnParticles(&emitter, 1000);
+    particleSystem_.SpawnParticles(&emitter, NUM_PARTICLES);
 }
 
 void FillrateNomNomNom::update()
 {
-    float msecs = 1000.0f / 60;
+    timer_.stop();
+    float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
+    timer_.start();
     particleSystem_.Update(msecs);
     
     nextEvent_ -= msecs;
@@ -126,7 +127,7 @@ bool SortPredicate(Particle *a, Particle *b)
 
 void FillrateNomNomNom::draw()
 {
-    gl::clear(Color(0, 0, 0.));
+    gl::clear(Color(0, 0, 0));
 
     // Getting the window dimensions in setup() is bugged for AppScreenSaver
     camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60);
@@ -165,6 +166,15 @@ void FillrateNomNomNom::draw()
     {
         gl::drawBillboard((*iter)->Position, Vec2f((*iter)->Size, (*iter)->Size), 0, right, up);
     }
+
+    #ifdef DEBUG
+        stringstream fpsString;
+        fpsString << "FPS:" << getAverageFps();
+        program_.unbind();
+        CameraOrtho textCam(0, static_cast<float>(getWindowWidth()), static_cast<float>(getWindowHeight()), 0, -10, 10);
+        gl::setMatrices(textCam);
+        gl::drawString(fpsString.str(), Vec2f(5, 5));
+    #endif
 }
 
 #ifdef SCREENSAVER

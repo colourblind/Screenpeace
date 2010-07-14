@@ -8,7 +8,9 @@ Global
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
 		ScreensaverDebug|Win32 = ScreensaverDebug|Win32
+		ScreensaverDebugXP|Win32 = ScreensaverDebugXP|Win32
 		ScreensaverRelease|Win32 = ScreensaverRelease|Win32
+		ScreensaverReleaseXP|Win32 = ScreensaverReleaseXP|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{899BF2A3-C978-429E-A362-2E8522899721}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -17,8 +19,12 @@ Global
 		{899BF2A3-C978-429E-A362-2E8522899721}.Release|Win32.Build.0 = Release|Win32
 		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverDebug|Win32.ActiveCfg = ScreensaverDebug|Win32
 		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverDebug|Win32.Build.0 = ScreensaverDebug|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverDebugXP|Win32.ActiveCfg = ScreensaverDebugXP|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverDebugXP|Win32.Build.0 = ScreensaverDebugXP|Win32
 		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverRelease|Win32.ActiveCfg = ScreensaverRelease|Win32
 		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
+		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
