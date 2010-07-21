@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FillrateNomNomNom", "src\FillrateNomNomNom\FillrateNomNomNom.vcproj", "{899BF2A3-C978-429E-A362-2E8522899721}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Churn", "src\Churn\Churn.vcproj", "{1C9E6EF2-36A5-4533-8176-BD409D2DB536}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -25,6 +27,18 @@ Global
 		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
 		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
 		{899BF2A3-C978-429E-A362-2E8522899721}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.Debug|Win32.Build.0 = Debug|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.Release|Win32.ActiveCfg = Release|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.Release|Win32.Build.0 = Release|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverDebug|Win32.ActiveCfg = ScreensaverDebug|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverDebug|Win32.Build.0 = ScreensaverDebug|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverDebugXP|Win32.ActiveCfg = Debug|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverDebugXP|Win32.Build.0 = Debug|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverRelease|Win32.ActiveCfg = Release|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverRelease|Win32.Build.0 = Release|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverReleaseXP|Win32.ActiveCfg = Release|Win32
+		{1C9E6EF2-36A5-4533-8176-BD409D2DB536}.ScreensaverReleaseXP|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
