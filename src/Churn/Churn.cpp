@@ -56,7 +56,6 @@ void Churn::setup()
     gl::enableAlphaBlending();
     gl::disableDepthRead();
     gl::disableDepthWrite();
-    gl::enableWireframe();
 }
 
 SwirlBox::SwirlBox() : 
@@ -98,8 +97,6 @@ void Churn::draw()
 {
     float windowWidth = static_cast<float>(getWindowWidth());
     float windowHeight = static_cast<float>(getWindowHeight());
-
-    gl::disableWireframe();
 
     CameraOrtho ortho = CameraOrtho(0, static_cast<float>(getWindowWidth()), static_cast<float>(getWindowHeight()), 0, -1, 1);
     gl::setMatrices(ortho);

@@ -7,5 +7,4 @@
 
 #define RES_CLOUD_IMG	    CINDER_RESOURCE(../../resources/, cloud0.png, 128, PNG)
 
-
 #endif // CHURN_RESOURCES_H
