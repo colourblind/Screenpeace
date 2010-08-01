@@ -60,6 +60,8 @@ private:
 
 void TimeForBedSaidZebedee::setup()
 {
+    Rand::randomize();
+
     circle_.Init();
     
     // Load texture
@@ -106,7 +108,7 @@ void Circle::Init()
 {
     if (depth_ > -1)
     {
-        float scaleByDepth = (depth_ + 1);
+        float scaleByDepth = (depth_ + 1.0f);
         scale_ = Rand::randFloat(50, 150) / scaleByDepth;
         position_ = Vec2f(Rand::randFloat(-600, 600) / (scaleByDepth * 2), Rand::randFloat(-400, 400) / (scaleByDepth * 2));
     }

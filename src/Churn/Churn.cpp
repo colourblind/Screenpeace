@@ -35,12 +35,17 @@ public:
     virtual void update();
 
 private:
-    SwirlBox boxen[NUM_BOXEN];
+    SwirlBox boxen_[NUM_BOXEN];
     Timer timer_;
 };
 
 void Churn::setup()
 {
+    Rand::randomize();
+
+    for (int i = 0; i < NUM_BOXEN; i ++)
+        boxen_[i] = SwirlBox();
+
     // Load texture
     gl::Texture::Format format;
     format.enableMipmapping(true);
@@ -50,7 +55,7 @@ void Churn::setup()
     gl::Texture texture = gl::Texture(loadImage(loadResource(RES_CLOUD_IMG)), format);
     for (int i = 0; i < NUM_BOXEN; i ++)
     {
-        boxen[i].Texture = texture;
+        boxen_[i].Texture = texture;
     }
 
     gl::enableAlphaBlending();
@@ -74,22 +79,22 @@ void Churn::update()
 
     for (int i = 0; i < 3; i ++)
     {
-        boxen[i].Rotation += boxen[i].RotationSpeed * msecs;
+        boxen_[i].Rotation += boxen_[i].RotationSpeed * msecs;
         
-        if (boxen[i].Rotation.x < 0)
-            boxen[i].Rotation.x += 360;
-        else if (boxen[i].Rotation.x > 360)
-            boxen[i].Rotation.x -= 360;
+        if (boxen_[i].Rotation.x < 0)
+            boxen_[i].Rotation.x += 360;
+        else if (boxen_[i].Rotation.x > 360)
+            boxen_[i].Rotation.x -= 360;
             
-        if (boxen[i].Rotation.y < 0)
-            boxen[i].Rotation.y += 360;
-        else if (boxen[i].Rotation.y > 360)
-            boxen[i].Rotation.y -= 360;
+        if (boxen_[i].Rotation.y < 0)
+            boxen_[i].Rotation.y += 360;
+        else if (boxen_[i].Rotation.y > 360)
+            boxen_[i].Rotation.y -= 360;
 
-        if (boxen[i].Rotation.z < 0)
-            boxen[i].Rotation.z += 360;
-        else if (boxen[i].Rotation.z > 360)
-            boxen[i].Rotation.z -= 360;
+        if (boxen_[i].Rotation.z < 0)
+            boxen_[i].Rotation.z += 360;
+        else if (boxen_[i].Rotation.z > 360)
+            boxen_[i].Rotation.z -= 360;
     }
 }
 
@@ -112,11 +117,11 @@ void Churn::draw()
     {
         gl::pushModelView();
 
-        gl::color(Color(boxen[i].Colour.x, boxen[i].Colour.y, boxen[i].Colour.z));
-        boxen[i].Texture.enableAndBind();
-        gl::rotate(boxen[i].Rotation);
+        gl::color(Color(boxen_[i].Colour.x, boxen_[i].Colour.y, boxen_[i].Colour.z));
+        boxen_[i].Texture.enableAndBind();
+        gl::rotate(boxen_[i].Rotation);
         gl::drawCube(Vec3f(0, 0, 0), Vec3f(10, 10, 10));
-        boxen[i].Texture.unbind();
+        boxen_[i].Texture.unbind();
         
         gl::popModelView();
     }
