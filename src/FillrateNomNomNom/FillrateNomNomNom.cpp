@@ -74,8 +74,8 @@ void FillrateNomNomNom::setup()
     emitter.MinInitialVelocity = Vec3f(0, 0, 0);
     emitter.MaxInitialVelocity = Vec3f(0, 0, 0);
     emitter.MinInitialMass = 0.5f;
-    emitter.MaxInitialMass = 2.5f;
-    emitter.MinInitialSize = 1;
+    emitter.MaxInitialMass = 1.5f;
+    emitter.MinInitialSize = 0.5f;
     emitter.MaxInitialSize = 10;
     emitter.InitialLife = -1;
     emitter.Frequency = 0;
@@ -99,9 +99,9 @@ void FillrateNomNomNom::update()
         
         Attractor *attractor = new Attractor();
         attractor->Position = Vec3f(x, y, z);
-        attractor->Mass = Rand::randFloat(-8, 16);
+        attractor->Mass = Rand::randFloat(-2, 4);
         attractor->Immortal = false;
-        attractor->Life = Rand::randFloat(50, 100);
+        attractor->Life = Rand::randFloat(200, 400);
         particleSystem_.AddAttractor(attractor);
         
         nextEvent_ = Rand::randFloat(250, 1000);
@@ -127,7 +127,8 @@ bool SortPredicate(Particle *a, Particle *b)
 
 void FillrateNomNomNom::draw()
 {
-    gl::clear(Color(0, 0, 0));
+    if (CLEAR_FRAMEBUFFER)
+        gl::clear(Color(0, 0, 0));
 
     // Getting the window dimensions in setup() is bugged for AppScreenSaver
     camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60);
@@ -161,13 +162,14 @@ void FillrateNomNomNom::draw()
     }
 
     vector<Particle *> *particleList = particleSystem_.GetParticles();
-    sort(particleList->begin(), particleList->end(), SortPredicate);
+    if (PERFORM_SORT)
+        sort(particleList->begin(), particleList->end(), SortPredicate);
     for (vector<Particle *>::iterator iter = particleList->begin(); iter != particleList->end(); iter ++)
     {
         gl::drawBillboard((*iter)->Position, Vec2f((*iter)->Size, (*iter)->Size), 0, right, up);
     }
 
-    #ifdef DEBUG
+    #ifdef _DEBUG
         stringstream fpsString;
         fpsString << "FPS:" << getAverageFps();
         program_.unbind();
