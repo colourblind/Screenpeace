@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)\bin"
-			IntermediateDirectory="$(SolutionDir)\build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\..\bin"
+			IntermediateDirectory="$(SolutionDir)\..\build\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -95,8 +95,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)\bin"
-			IntermediateDirectory="$(SolutionDir)\build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\..\bin"
+			IntermediateDirectory="$(SolutionDir)\..\build\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -174,8 +174,8 @@
 		</Configuration>
 		<Configuration
 			Name="ScreensaverDebug|Win32"
-			OutputDirectory="$(SolutionDir)\bin"
-			IntermediateDirectory="$(SolutionDir)\build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\..\bin"
+			IntermediateDirectory="$(SolutionDir)\..\build\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -251,8 +251,8 @@
 		</Configuration>
 		<Configuration
 			Name="ScreensaverRelease|Win32"
-			OutputDirectory="$(SolutionDir)\bin"
-			IntermediateDirectory="$(SolutionDir)\build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\..\bin"
+			IntermediateDirectory="$(SolutionDir)\..\build\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -331,8 +331,8 @@
 		</Configuration>
 		<Configuration
 			Name="ScreensaverDebugXP|Win32"
-			OutputDirectory="$(SolutionDir)\bin"
-			IntermediateDirectory="$(SolutionDir)\build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\..\bin"
+			IntermediateDirectory="$(SolutionDir)\..\build\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -408,8 +408,8 @@
 		</Configuration>
 		<Configuration
 			Name="ScreensaverReleaseXP|Win32"
-			OutputDirectory="$(SolutionDir)\bin"
-			IntermediateDirectory="$(SolutionDir)\build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\..\bin"
+			IntermediateDirectory="$(SolutionDir)\..\build\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"

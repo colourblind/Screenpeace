@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FillrateNomNomNom", "src\FillrateNomNomNom\FillrateNomNomNom.vcproj", "{899BF2A3-C978-429E-A362-2E8522899721}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FillrateNomNomNom", "FillrateNomNomNom\FillrateNomNomNom.vcproj", "{899BF2A3-C978-429E-A362-2E8522899721}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Churn", "src\Churn\Churn.vcproj", "{1C9E6EF2-36A5-4533-8176-BD409D2DB536}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Churn", "Churn\Churn.vcproj", "{1C9E6EF2-36A5-4533-8176-BD409D2DB536}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimeForBedSaidZebedee", "src\TimeForBedSaidZebedee\TimeForBedSaidZebedee.vcproj", "{91FF5983-993F-42DC-8C36-E5492519203C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimeForBedSaidZebedee", "TimeForBedSaidZebedee\TimeForBedSaidZebedee.vcproj", "{91FF5983-993F-42DC-8C36-E5492519203C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cubesplosion", "src\Cubesplosion\Cubesplosion.vcproj", "{2C65F197-1655-4FA3-B058-76A58A85D5B9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cubesplosion", "Cubesplosion\Cubesplosion.vcproj", "{2C65F197-1655-4FA3-B058-76A58A85D5B9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DrunkenWorms", "src\DrunkenWorms\DrunkenWorms.vcproj", "{82688892-A3EF-4EB3-A0FC-0B0BBB89782D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DrunkenWorms", "DrunkenWorms\DrunkenWorms.vcproj", "{82688892-A3EF-4EB3-A0FC-0B0BBB89782D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
