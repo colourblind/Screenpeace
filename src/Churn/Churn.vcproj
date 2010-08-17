@@ -174,7 +174,7 @@
 		<Configuration
 			Name="ScreensaverDebug|Win32"
 			OutputDirectory="$(SolutionDir)\..\bin"
-			IntermediateDirectory="$(SolutionDir)\build\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)\..\build\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
