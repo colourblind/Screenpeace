@@ -22,15 +22,15 @@ struct Worm
 {
     void Init(float windowWidth, float windowHeight)
     {
-        Radius = Rand::randFloat(5, 40);
+        Radius = Rand::randFloat(MIN_RADIUS, MAX_RADIUS);
         RadiusChange = Rand::randFloat(-0.005f, 0.005f);
         CentreChange = Vec2f(Rand::randFloat(-0.01f, 0.01f), Rand::randFloat(-0.01f, 0.01f));
-        Colour = Color(Rand::randFloat(0, 0.5), Rand::randFloat(0, 0.25), 0);
-        Rotation = Rand::randFloat(0, M_PI * 2);
-        RotationChange = Rand::randFloat(-0.005f, 0.005f);
-        Life = Rand::randFloat(3000, 6000);
+        Colour = Color(Rand::randFloat(0, 0.5f), Rand::randFloat(0, 0.25f), 0);
+        Rotation = Rand::randFloat(0, static_cast<float>(M_PI * 2));
+        RotationChange = Rand::randFloat(-MAX_ROTATION_SPEED, MAX_ROTATION_SPEED);
+        Life = Rand::randFloat(MIN_LIFE, MAX_LIFE);
 
-        float rot = Rand::randFloat(0, M_PI * 2);
+        float rot = Rand::randFloat(0, static_cast<float>(M_PI * 2));
         float distance = (windowWidth / 2) / pow(Rand::randFloat(1, SPREAD), 2);
         Centre = Vec2f(math<float>::sin(rot) * distance + (windowWidth / 2), math<float>::cos(rot) * distance + (windowHeight / 2));
 
@@ -60,6 +60,8 @@ struct Worm
 class DrunkenWorms : public APP_TYPE
 {
 public:
+    DrunkenWorms() : noSeriouslyInit_(false) { }
+
     virtual void setup();
     virtual void draw();
     virtual void update();
@@ -67,17 +69,12 @@ public:
 private:
     Timer timer_;
     Worm worms_[NUM_WORMS];
+    bool noSeriouslyInit_;
 };
 
 void DrunkenWorms::setup()
 {
     Rand::randomize();
-
-    float windowWidth = static_cast<float>(getWindowWidth());
-    float windowHeight = static_cast<float>(getWindowHeight());
-
-    for (int i = 0; i < NUM_WORMS; i ++)
-        worms_[i].Init(windowWidth, windowHeight);
 
     gl::enableAlphaBlending();
     gl::disableDepthRead();
@@ -86,6 +83,19 @@ void DrunkenWorms::setup()
 
 void DrunkenWorms::update()
 {
+    // Screensavers in release mode have issues getting window dimensions in
+    // init. Hence this bullshit.
+    if (!noSeriouslyInit_)
+    {
+        float windowWidth = static_cast<float>(getWindowWidth());
+        float windowHeight = static_cast<float>(getWindowHeight());
+
+        for (int i = 0; i < NUM_WORMS; i ++)
+            worms_[i].Init(windowWidth, windowHeight);
+
+        noSeriouslyInit_ = true;
+    }
+
     timer_.stop();
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
