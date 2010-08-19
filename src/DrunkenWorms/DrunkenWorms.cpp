@@ -38,6 +38,9 @@ struct Worm
             LastPosition = Vec2f(-1000, -1000);
 
         Position = GetNextPosition();
+
+        if (!SHOW_TRAILS)
+            LastPosition = Position;
     }
 
     Vec2f GetNextPosition()
