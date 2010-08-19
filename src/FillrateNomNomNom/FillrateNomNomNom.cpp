@@ -35,7 +35,7 @@ struct Light
 class FillrateNomNomNom : public APP_TYPE
 {
 public:
-    FillrateNomNomNom() : nextEvent_(1) { }
+    FillrateNomNomNom() : nextEvent_(0) { }
 
     virtual void setup();
     virtual void update();
@@ -74,7 +74,7 @@ void FillrateNomNomNom::setup()
     emitter.MinInitialVelocity = Vec3f(0, 0, 0);
     emitter.MaxInitialVelocity = Vec3f(0, 0, 0);
     emitter.MinInitialMass = 0.5f;
-    emitter.MaxInitialMass = 1.5f;
+    emitter.MaxInitialMass = 1.0f;
     emitter.MinInitialSize = 0.5f;
     emitter.MaxInitialSize = 10;
     emitter.InitialLife = -1;
@@ -93,9 +93,9 @@ void FillrateNomNomNom::update()
     if (nextEvent_ < 0)
     {
         // Time for more spice! Add a new, powerful, short-lived repeller
-        float x = Rand::randFloat(-25, 25);
-        float y = Rand::randFloat(-25, 25);
-        float z = Rand::randFloat(-25, 25);
+        float x = Rand::randFloat(-50, 50);
+        float y = Rand::randFloat(-50, 50);
+        float z = Rand::randFloat(-50, 50);
         
         Attractor *attractor = new Attractor();
         attractor->Position = Vec3f(x, y, z);
@@ -104,7 +104,7 @@ void FillrateNomNomNom::update()
         attractor->Life = Rand::randFloat(200, 400);
         particleSystem_.AddAttractor(attractor);
         
-        nextEvent_ = Rand::randFloat(250, 1000);
+        nextEvent_ = Rand::randFloat(250, 1500);
 
         if (lights_.size() > 3)
             lights_.pop_back();
@@ -138,10 +138,26 @@ void FillrateNomNomNom::draw()
     Vec3f right = Vec3f(-1, 0, 0);
     Vec3f up = camera_.getWorldUp();
 
+    vector<Particle *> *particleList = particleSystem_.GetParticles();
+    if (PERFORM_SORT)
+        sort(particleList->begin(), particleList->end(), SortPredicate);
+
+    if (SHOW_TAILS)
+    {
+        program_.unbind();
+        texture_.disable();
+        gl::color(ColorA(1, 1, 1, 0.1f));
+        for (vector<Particle *>::iterator iter = particleList->begin(); iter != particleList->end(); iter ++)
+        {
+            gl::drawLine((*iter)->Position, (*iter)->Position - ((*iter)->Velocity * 20));
+        }
+    }
+
     program_.bind();
+    texture_.enableAndBind();
 
     deque<Light>::iterator iter = lights_.begin();
-    for (int i = 0; i < 4; i ++)
+    for (int i = 0; i < 3; i ++)
     {
         stringstream posName;
         posName << "lightPos" << i;
@@ -161,9 +177,6 @@ void FillrateNomNomNom::draw()
         }
     }
 
-    vector<Particle *> *particleList = particleSystem_.GetParticles();
-    if (PERFORM_SORT)
-        sort(particleList->begin(), particleList->end(), SortPredicate);
     for (vector<Particle *>::iterator iter = particleList->begin(); iter != particleList->end(); iter ++)
     {
         gl::drawBillboard((*iter)->Position, Vec2f((*iter)->Size, (*iter)->Size), 0, right, up);

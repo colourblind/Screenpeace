@@ -1,8 +1,9 @@
 #ifndef FILLRATENOMNOMNOM_CONSTANTS_H
 #define FILLRATENOMNOMNOM_CONSTANTS_H
 
-const int NUM_PARTICLES = 2000;
+const int NUM_PARTICLES = 3000;
 const bool CLEAR_FRAMEBUFFER = true;
 const bool PERFORM_SORT = false;
+const bool SHOW_TAILS = true;
 
 #endif // FILLRATENOMNOMNOM_CONSTANTS_H

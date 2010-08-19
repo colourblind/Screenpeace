@@ -5,12 +5,10 @@ varying float light;
 uniform vec3 lightPos0;
 uniform vec3 lightPos1;
 uniform vec3 lightPos2;
-uniform vec3 lightPos3;
 
 uniform float lightStr0;
 uniform float lightStr1;
 uniform float lightStr2;
-uniform float lightStr3;
 
 void main()
 {
@@ -18,7 +16,6 @@ void main()
     light = dot(vec3(0, 0, 1), normalize(gl_Vertex.xyz - lightPos0)) * lightStr0;
     light += dot(vec3(0, 0, 1), normalize(gl_Vertex.xyz - lightPos1)) * lightStr1;
     light += dot(vec3(0, 0, 1), normalize(gl_Vertex.xyz - lightPos2)) * lightStr2;
-    light += dot(vec3(0, 0, 1), normalize(gl_Vertex.xyz - lightPos3)) * lightStr3;
     clamp(light, 0.0, 1.0);
     
 	gl_Position = ftransform();
