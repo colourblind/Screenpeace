@@ -29,10 +29,18 @@ private:
     Timer timer_;
     gl::GlslProg program_;
     Vec2f fieldKeyframes_[NUM_NOISES][FIELD_SIZE][FIELD_SIZE];
-    Vec2f windPosition_;
-    Vec2f windVelocity_;
+    float timeOffset_[FIELD_SIZE][FIELD_SIZE];
     float currentNoise_;
 };
+
+float ModFloat(float a, float b)
+{
+    if (a < b)
+        return a;
+
+    float r = a / b;
+    return a - math<float>::floor(r) * b;
+}
 
 void StrawberryFieldsForever::setup()
 {
@@ -42,8 +50,6 @@ void StrawberryFieldsForever::setup()
 
     int octaves = static_cast<int>(math<float>::log(FIELD_SIZE) / math<float>::log(2));
 
-    windPosition_ = Vec2f(Rand::randFloat(0, static_cast<float>(FIELD_SIZE)), Rand::randFloat(0, static_cast<float>(FIELD_SIZE)));
-    windVelocity_ = Vec2f(0.1f, 0.1f);
     for (int k = 0; k < NUM_NOISES; k ++)
     {
         Perlin noise = Perlin(octaves, Rand::randInt());
@@ -51,6 +57,12 @@ void StrawberryFieldsForever::setup()
             for (int j = 0; j < FIELD_SIZE; j ++)
                 fieldKeyframes_[k][i][j] = Vec2f(0, noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / 24));
     }
+
+    Perlin noise = Perlin(octaves, Rand::randInt());
+    for (int i = 0; i < FIELD_SIZE; i ++)
+        for (int j = 0; j < FIELD_SIZE; j ++)
+            timeOffset_[i][j] = noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / 24);
+
     currentNoise_ = 0;
 }
 
@@ -60,19 +72,7 @@ void StrawberryFieldsForever::update()
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
 
-    windPosition_ += windVelocity_;
-    if (windPosition_.x > FIELD_SIZE)
-        windPosition_.x -= FIELD_SIZE;
-    else if (windPosition_.x < 0)
-        windPosition_.x += FIELD_SIZE;
-    if (windPosition_.y > FIELD_SIZE)
-        windPosition_.y -= FIELD_SIZE;
-    else if (windPosition_.y < 0)
-        windPosition_.y += FIELD_SIZE;
-
-    currentNoise_ += 0.1f;
-    if (math<float>::floor(currentNoise_) > NUM_NOISES)
-        currentNoise_ = 0;           // Need to handle this properly when lerping
+    currentNoise_ += msecs * SPEED; // Will overflow eventually. Oh well.
 }
 
 void StrawberryFieldsForever::draw()
@@ -96,11 +96,17 @@ void StrawberryFieldsForever::draw()
     {
         for (int j = 0; j < FIELD_SIZE; j ++)
         {
-            int noiseIndex = static_cast<int>(math<float>::floor(currentNoise_));
+            // This is all a cludge to stop the offsets all coming to obvious 
+            // maxima and minima at the same time (as they would with just the 
+            // global currentNoise_ value, and involves more maths than
+            // I'd like, but hey, it works
+            float noise = ModFloat(currentNoise_ + timeOffset_[i][j], NUM_NOISES);
+
+            int noiseIndex = static_cast<int>(math<float>::floor(noise)) % NUM_NOISES;
 
             float a = fieldKeyframes_[noiseIndex][i][j].y;
             float b = fieldKeyframes_[(noiseIndex + 1) % NUM_NOISES][i][j].y;
-            float t = (currentNoise_ - noiseIndex);
+            float t = noise - noiseIndex;
 
             float offset = lerp(a, b, t);
 

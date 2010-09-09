@@ -5,5 +5,6 @@ const int FIELD_SIZE = 128;
 const float NORMAL_MODIFIER = 25.0f;
 const float OFFSET_MODIFIER = 10.0f;
 const int NUM_NOISES = 4;
+const float SPEED = 0.00025f;
 
 #endif // STRAWBERRYFIELDSFOREVER_CONSTANTS_H
