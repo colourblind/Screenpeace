@@ -8,6 +8,8 @@
 #include "Constants.h"
 #include "Resources.h"
 
+#include <sstream>
+
 using namespace cinder;
 using namespace cinder::app;
 using namespace std;
@@ -35,11 +37,14 @@ private:
 
 float ModFloat(float a, float b)
 {
+    assert(a >= 0);
     if (a < b)
         return a;
 
     float r = a / b;
-    return a - math<float>::floor(r) * b;
+    float result = a - math<float>::floor(r) * b;
+    assert(result >= 0 && result < b);
+    return result;
 }
 
 void StrawberryFieldsForever::setup()
@@ -61,7 +66,7 @@ void StrawberryFieldsForever::setup()
     Perlin noise = Perlin(octaves, Rand::randInt());
     for (int i = 0; i < FIELD_SIZE; i ++)
         for (int j = 0; j < FIELD_SIZE; j ++)
-            timeOffset_[i][j] = noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / 24);
+            timeOffset_[i][j] = math<float>::abs(noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / 24));
 
     currentNoise_ = 0;
 }
@@ -101,8 +106,8 @@ void StrawberryFieldsForever::draw()
             // global currentNoise_ value, and involves more maths than
             // I'd like, but hey, it works
             float noise = ModFloat(currentNoise_ + timeOffset_[i][j], NUM_NOISES);
-
-            int noiseIndex = static_cast<int>(math<float>::floor(noise)) % NUM_NOISES;
+            int noiseIndex = static_cast<int>(math<float>::floor(noise));
+            assert(noiseIndex < NUM_NOISES && noiseIndex >= 0);
 
             float a = fieldKeyframes_[noiseIndex][i][j].y;
             float b = fieldKeyframes_[(noiseIndex + 1) % NUM_NOISES][i][j].y;
@@ -114,6 +119,14 @@ void StrawberryFieldsForever::draw()
             gl::drawSolidRect(Rectf(i, j, i + 0.75f, j + 0.75f));
         }
     }
+
+    //gl::color(Color(1, 1, 1));
+    //stringstream fpsString;
+    //fpsString << "FPS:" << "??";
+    //program_.unbind();
+    //CameraOrtho textCam(0, static_cast<float>(getWindowWidth()), static_cast<float>(getWindowHeight()), 0, -10, 10);
+    //gl::setMatrices(textCam);
+    //gl::drawString(fpsString.str(), Vec2f(5, 5));
 }
 
 #ifdef SCREENSAVER
