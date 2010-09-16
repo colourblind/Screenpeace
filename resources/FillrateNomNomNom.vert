@@ -16,6 +16,7 @@ void main()
     light = dot(vec3(0, 0, 1), normalize(gl_Vertex.xyz - lightPos0)) * lightStr0;
     light += dot(vec3(0, 0, 1), normalize(gl_Vertex.xyz - lightPos1)) * lightStr1;
     light += dot(vec3(0, 0, 1), normalize(gl_Vertex.xyz - lightPos2)) * lightStr2;
+    light *= 1.2;
     clamp(light, 0.0, 1.0);
     
 	gl_Position = ftransform();
