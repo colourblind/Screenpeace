@@ -4,7 +4,7 @@
 using namespace cinder;
 using namespace std;
 
-ParticleSystem::ParticleSystem()
+ParticleSystem::ParticleSystem() : perlin_(Perlin(3)), chaos_(0)
 {
 
 }
@@ -64,6 +64,7 @@ void ParticleSystem::Update(float msecs)
             currentAttractor = *attractorIter;
             Vec3f dir = (currentAttractor->Position - currentParticle->Position).normalized();
             currentParticle->Velocity += dir * (currentAttractor->Mass / currentParticle->Mass) * 0.01f;
+            currentParticle->Velocity += perlin_.dfBm(currentParticle->Position * 0.01f) * chaos_; // lolrandom
             currentParticle->Velocity *= 0.95f; // friction
 /*
             float range = currentAttractor->Position.distance(currentParticle->Position);

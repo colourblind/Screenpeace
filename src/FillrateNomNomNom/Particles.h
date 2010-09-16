@@ -2,6 +2,7 @@
 #define PARTICLES_H
 
 #include <vector>
+#include "cinder/Perlin.h"
 #include "cinder/Vector.h"
 
 struct Particle
@@ -56,6 +57,8 @@ public:
     unsigned int GetAttractorCount() { return attractors_.size(); }
     std::vector<Attractor *> *GetAttractors() { return &attractors_; }
 
+    void SetChaos(float chaos) { chaos_ = chaos; }
+
 private:
     Particle *CreateParticle(Emitter *emitter);
 
@@ -63,6 +66,8 @@ private:
     std::vector<Emitter *> emitters_;
     std::vector<Attractor *> attractors_;
     std::vector<cinder::Vec3f> forces_;
+    cinder::Perlin perlin_;
+    float chaos_;
 };
 
 #endif // PARTICLES_H

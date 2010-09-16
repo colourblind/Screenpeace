@@ -76,9 +76,11 @@ void FillrateNomNomNom::setup()
     emitter.MinInitialMass = 0.5f;
     emitter.MaxInitialMass = 1.0f;
     emitter.MinInitialSize = 0.5f;
-    emitter.MaxInitialSize = 10;
+    emitter.MaxInitialSize = 15;
     emitter.InitialLife = -1;
     emitter.Frequency = 0;
+
+    particleSystem_.SetChaos(CHAOS);
     particleSystem_.SpawnParticles(&emitter, NUM_PARTICLES);
 }
 
@@ -100,6 +102,8 @@ void FillrateNomNomNom::update()
         Attractor *attractor = new Attractor();
         attractor->Position = Vec3f(x, y, z);
         attractor->Mass = Rand::randFloat(-2, 4);
+        //if (attractor->Mass > 0)
+        //    attractor->Mass *= 0.5; // We want to weight the change toward attraction, but don't want the higher mass
         attractor->Immortal = false;
         attractor->Life = Rand::randFloat(200, 400);
         particleSystem_.AddAttractor(attractor);
