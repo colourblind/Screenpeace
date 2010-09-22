@@ -60,13 +60,13 @@ void StrawberryFieldsForever::setup()
         Perlin noise = Perlin(octaves, Rand::randInt());
         for (int i = 0; i < FIELD_SIZE; i ++)
             for (int j = 0; j < FIELD_SIZE; j ++)
-                fieldKeyframes_[k][i][j] = Vec2f(0, noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / 24));
+                fieldKeyframes_[k][i][j] = Vec2f(0, noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / NOISE_RESOLUTION));
     }
 
     Perlin noise = Perlin(octaves, Rand::randInt());
     for (int i = 0; i < FIELD_SIZE; i ++)
         for (int j = 0; j < FIELD_SIZE; j ++)
-            timeOffset_[i][j] = math<float>::abs(noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / 24));
+            timeOffset_[i][j] = math<float>::abs(noise.fBm(Vec2f(static_cast<float>(i), static_cast<float>(j)) / NOISE_RESOLUTION));
 
     currentNoise_ = 0;
 }
