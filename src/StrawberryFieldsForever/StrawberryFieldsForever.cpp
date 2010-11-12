@@ -53,7 +53,7 @@ void StrawberryFieldsForever::setup()
 
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
 
-    int octaves = static_cast<int>(math<float>::log(FIELD_SIZE) / math<float>::log(2));
+    int octaves = static_cast<int>(math<float>::log(static_cast<float>(FIELD_SIZE)) / math<float>::log(2));
 
     for (int k = 0; k < NUM_NOISES; k ++)
     {
@@ -105,7 +105,7 @@ void StrawberryFieldsForever::draw()
             // maxima and minima at the same time (as they would with just the 
             // global currentNoise_ value, and involves more maths than
             // I'd like, but hey, it works
-            float noise = ModFloat(currentNoise_ + timeOffset_[i][j], NUM_NOISES);
+            float noise = ModFloat(currentNoise_ + timeOffset_[i][j], static_cast<float>(NUM_NOISES));
             int noiseIndex = static_cast<int>(math<float>::floor(noise));
             assert(noiseIndex < NUM_NOISES && noiseIndex >= 0);
 
@@ -116,7 +116,7 @@ void StrawberryFieldsForever::draw()
             float offset = lerp(a, b, t);
 
             program_.uniform("offset", Vec2f(offset / 2, offset / 2));
-            gl::drawSolidRect(Rectf(i, j, i + 0.75f, j + 0.75f));
+            gl::drawSolidRect(Rectf(static_cast<float>(i), static_cast<float>(j), i + 0.75f, j + 0.75f));
         }
     }
 

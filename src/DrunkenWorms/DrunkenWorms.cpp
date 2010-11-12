@@ -31,7 +31,7 @@ struct Worm
         Life = Rand::randFloat(MIN_LIFE, MAX_LIFE);
 
         float rot = Rand::randFloat(0, static_cast<float>(M_PI * 2));
-        float distance = (windowWidth / 2) / pow(Rand::randFloat(1, SPREAD), 2);
+        float distance = (windowWidth / 2) / pow(Rand::randFloat(1, static_cast<float>(SPREAD)), 2);
         Centre = Vec2f(math<float>::sin(rot) * distance + (windowWidth / 2), math<float>::cos(rot) * distance + (windowHeight / 2));
 
         if (TRAILS_OFFSCREEN)
