@@ -16,6 +16,9 @@ paths.
 FILLRATE NOM NOM NOM
 A pulsing, twitchily lit particle system.
 
+STRAWBERRY FIELDS FOREVER
+Flowing Perlin noise based fields of red polys.
+
 TIME FOR BED SAID ZEBEDEE
 Hierarchically organised spinning circles.
 
@@ -34,6 +37,6 @@ each project.
 to debug), one of Vista/Win7 screensavers, and one for XP screensavers, and 
 release and debug for each of those.
 
-- This was built against the 0.8.1 version of Cinder, with the e2233c0 billboard 
-texturing bug fix applied manually. I'm not sure how it fairs with more recent 
-versions. YMMV
+- All of this is very much work in progress, nothing is ever finished, and 
+the code is likely to contain lots of vestigial junk and blind alleys. It's 
+all doodling!
