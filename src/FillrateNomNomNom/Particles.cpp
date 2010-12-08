@@ -66,12 +66,6 @@ void ParticleSystem::Update(float msecs)
             currentParticle->Velocity += dir * (currentAttractor->Mass / currentParticle->Mass) * 0.01f;
             currentParticle->Velocity += perlin_.dfBm(currentParticle->Position * 0.01f) * chaos_; // lolrandom
             currentParticle->Velocity *= 0.95f; // friction
-/*
-            float range = currentAttractor->Position.distance(currentParticle->Position);
-            if (range < 0)
-                range = 1;
-            currentParticle->Velocity += dir * (currentAttractor->Mass / (range * range)) * 0.01f; 
-            */
         }
         
         // Apply forces

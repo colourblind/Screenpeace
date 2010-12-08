@@ -101,7 +101,7 @@ void FillrateNomNomNom::update()
         
         Attractor *attractor = new Attractor();
         attractor->Position = Vec3f(x, y, z);
-        attractor->Mass = Rand::randFloat(-2, 4);
+        attractor->Mass = Rand::randFloat(-1.5, 3);
         //if (attractor->Mass > 0)
         //    attractor->Mass *= 0.5; // We want to weight the change toward attraction, but don't want the higher mass
         attractor->Immortal = false;
@@ -183,7 +183,12 @@ void FillrateNomNomNom::draw()
 
     for (vector<Particle *>::iterator iter = particleList->begin(); iter != particleList->end(); iter ++)
     {
-        gl::drawBillboard((*iter)->Position, Vec2f((*iter)->Size, (*iter)->Size), 0, right, up);
+        float size = (*iter)->Size / 2;
+        gl::pushModelView();
+        gl::translate((*iter)->Position);
+        gl::drawSolidRect(Rectf(-size, -size, size, size));
+        gl::popModelView();
+        //gl::drawBillboard((*iter)->Position, Vec2f((*iter)->Size, (*iter)->Size), 0, right, up);
     }
 
     #ifdef _DEBUG
