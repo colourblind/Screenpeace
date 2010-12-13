@@ -18,36 +18,11 @@ using namespace cinder::app;
     #define APP_TYPE    AppBasic
 #endif
 
-class RandomCam : public CameraPersp
-{
-public:
-    RandomCam() : initialised_(false), up_(Vec3f(0, 1, 0)), targetLocked_(false) { }
-    RandomCam(int width, int height) : CameraPersp(width, height, 60, 0.01f, 6), initialised_(true), up_(Vec3f(0, 1, 0)) { }
-
-    void SetMatrices();
-    void Update(float msecs);
-
-    void SetPosition(Vec3f position) { position_ = position; }
-    void SetTarget(Vec3f target) { target_ = target; }
-    void SetDirection(Vec3f direction) { direction_ = direction; }
-    void SetUp(Vec3f up) { up_ = up; }
-    void SetLocked(bool targetLocked) { targetLocked_ = targetLocked; }
-
-    bool IsInitialised() const { return initialised_; }
-
-private:
-    bool initialised_;
-
-    Vec3f position_;
-    Vec3f target_;
-    Vec3f direction_;
-    Vec3f up_;
-    bool targetLocked_;
-};
-
 class MagicalMysteryTour : public APP_TYPE
 {
 public:
+    MagicalMysteryTour() : initialised_(false), rotation_(Vec3f(0, 0, 0)) { }
+
     virtual void setup();
     virtual void draw();
     virtual void update();
@@ -55,26 +30,15 @@ public:
 private:
     void GenerateMesh(TriMesh *mesh, int level, Vec3f centre);
 
+    bool initialised_;
     Timer timer_;
-    RandomCam cam_;
+    CameraPersp cam_;
     gl::GlslProg program_;
     gl::Fbo fbo_;
     TriMesh mesh_;
+    Vec3f rotation_;
+    Vec3f cameraPosition_;
 };
-
-void RandomCam::SetMatrices()
-{
-    if (targetLocked_)
-        lookAt(position_, target_, up_);
-    else
-        lookAt(position_, position_ + direction_, up_);
-    gl::setMatrices(*this); 
-}
-
-void RandomCam::Update(float msecs)
-{
-    position_ += Vec3f(-0.0002f, 0, 0) * msecs;
-}
 
 void MagicalMysteryTour::setup()
 {
@@ -91,7 +55,8 @@ void MagicalMysteryTour::update()
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
 
-    cam_.Update(msecs);
+    //cameraPosition_ += Vec3f(-0.0002f, 0, 0) * msecs;
+    rotation_ += Vec3f(0.1f, 0, -0.13f);
 }
 
 void MagicalMysteryTour::draw()
@@ -100,13 +65,12 @@ void MagicalMysteryTour::draw()
     int windowHeight = getWindowHeight();
 
     // Since fetching window dimensions fails for screensavers during setup(), lazy create the FBO and camera
-    if (!cam_.IsInitialised())
+    if (!initialised_)
     {
-        cam_ = RandomCam(windowWidth, windowHeight);
-        cam_.SetPosition(Vec3f(3, -0.25f, 0));
-        cam_.SetDirection(Vec3f(-1, 0, 0));
-        cam_.SetLocked(false);
+        cam_ = CameraPersp(windowWidth, windowHeight, 60, 0.01f, 6);
+        cameraPosition_ = Vec3f(3, -0.25f, 0.5);
         fbo_ = gl::Fbo(windowWidth, windowHeight, false, true, true);
+        initialised_ = true;
     }
 
     fbo_.bindFramebuffer();
@@ -114,9 +78,11 @@ void MagicalMysteryTour::draw()
 	gl::enableDepthRead();
     gl::enableDepthWrite();
 
-    cam_.SetMatrices();
+    cam_.lookAt(cameraPosition_, Vec3f(0, 0, 0), Vec3f(0, 1, 0));
+    gl::setMatrices(cam_); 
 
     program_.bind();
+    gl::rotate(rotation_);
     gl::draw(mesh_);
     program_.unbind();
 
