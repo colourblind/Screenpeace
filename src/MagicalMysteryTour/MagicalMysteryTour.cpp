@@ -34,6 +34,7 @@ private:
     Timer timer_;
     CameraPersp cam_;
     gl::GlslProg program_;
+    gl::GlslProg final_;
     gl::Fbo fbo_;
     TriMesh mesh_;
     Vec3f rotation_;
@@ -45,6 +46,7 @@ void MagicalMysteryTour::setup()
     Rand::randomize();
 
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
+    final_ = gl::GlslProg(loadResource(RES_VERT_DEFAULT), loadResource(RES_FRAG_MAGIC));
     
     GenerateMesh(&mesh_, 1, Vec3f(0, 0, 0));
 }
@@ -56,7 +58,7 @@ void MagicalMysteryTour::update()
     timer_.start();
 
     //cameraPosition_ += Vec3f(-0.0002f, 0, 0) * msecs;
-    rotation_ += Vec3f(0.1f, 0, -0.13f);
+    rotation_ += Vec3f(0, 0.13f, 0);
 }
 
 void MagicalMysteryTour::draw()
@@ -95,7 +97,10 @@ void MagicalMysteryTour::draw()
     gl::disableDepthRead();
 
     // TODO: TBD post-processing magic
+    fbo_.getTexture().bind(1);
+    final_.bind();
     gl::draw(fbo_.getTexture(), Rectf(0, static_cast<float>(windowHeight), static_cast<float>(windowWidth), 0));
+    final_.unbind();
 }
 
 // Generate mesh for Sierpinski Pyramid

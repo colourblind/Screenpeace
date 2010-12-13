@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DrunkenWorms", "DrunkenWorm
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StrawberryFieldsForever", "StrawberryFieldsForever\StrawberryFieldsForever.vcproj", "{310A62D7-6A4F-4DC9-A100-FD5AC505F012}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MagicalMysteryTour", "MagicalMysteryTour\MagicalMysteryTour.vcproj", "{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -95,6 +97,18 @@ Global
 		{310A62D7-6A4F-4DC9-A100-FD5AC505F012}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
 		{310A62D7-6A4F-4DC9-A100-FD5AC505F012}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
 		{310A62D7-6A4F-4DC9-A100-FD5AC505F012}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.Debug|Win32.Build.0 = Debug|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.Release|Win32.ActiveCfg = Release|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.Release|Win32.Build.0 = Release|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverDebug|Win32.ActiveCfg = ScreensaverDebug|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverDebug|Win32.Build.0 = ScreensaverDebug|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverDebugXP|Win32.ActiveCfg = ScreensaverDebugXP|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverDebugXP|Win32.Build.0 = ScreensaverDebugXP|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverRelease|Win32.ActiveCfg = ScreensaverRelease|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
+		{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
