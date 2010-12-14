@@ -70,7 +70,7 @@ void MagicalMysteryTour::draw()
     if (!initialised_)
     {
         cam_ = CameraPersp(windowWidth, windowHeight, 60, 0.01f, 6);
-        cameraPosition_ = Vec3f(3, -0.25f, 0.5);
+        cameraPosition_ = Vec3f(2, -0.5f, 0.5);
         fbo_ = gl::Fbo(windowWidth, windowHeight, false, true, true);
         initialised_ = true;
     }
@@ -84,8 +84,16 @@ void MagicalMysteryTour::draw()
     gl::setMatrices(cam_); 
 
     program_.bind();
+
+    gl::pushModelView();
     gl::rotate(rotation_);
     gl::draw(mesh_);
+    gl::popModelView();
+
+    gl::rotate(rotation_ + Vec3f(180, 0, 0));
+    gl::translate(Vec3f(0, 0, 1));
+    gl::draw(mesh_);
+
     program_.unbind();
 
     fbo_.unbindFramebuffer();
