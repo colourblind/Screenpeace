@@ -6,11 +6,13 @@
 #include "cinder/Vector.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Vbo.h"
 #include "Constants.h"
 #include "Particles.h"
 #include "Resources.h"
 
 #include <deque>
+#include <vector>
 #include <sstream>
 
 using namespace cinder;
@@ -44,6 +46,7 @@ public:
 private:
     gl::GlslProg program_;
     gl::Texture texture_;
+    gl::VboMesh vbo_;
     ParticleSystem particleSystem_;
     float nextEvent_;
     CameraPersp camera_;
@@ -64,6 +67,30 @@ void FillrateNomNomNom::setup()
     
     texture_ = gl::Texture(loadImage(loadResource(RES_PARTICLE_IMG)), format);
     texture_.enableAndBind();
+
+    gl::VboMesh::Layout layout;
+	layout.setStaticIndices();
+	layout.setDynamicPositions();
+	layout.setStaticTexCoords2d();
+	vbo_ = gl::VboMesh(NUM_PARTICLES * 4, NUM_PARTICLES * 4, layout, GL_QUADS);
+
+    vector<uint32_t> indices;
+	vector<Vec2f> texCoords;
+    for (int i = 0; i < NUM_PARTICLES; i ++)
+    {
+        indices.push_back(i * 4 + 0);
+        indices.push_back(i * 4 + 1);
+        indices.push_back(i * 4 + 2);
+        indices.push_back(i * 4 + 3);
+
+        texCoords.push_back(Vec2f(0, 0));
+        texCoords.push_back(Vec2f(0, 1));
+        texCoords.push_back(Vec2f(1, 1));
+        texCoords.push_back(Vec2f(1, 0));
+    }
+    vbo_.bufferIndices(indices);
+    vbo_.bufferTexCoords2d(0, texCoords);
+
     gl::disableDepthRead();
     gl::disableDepthWrite();
     gl::enableAlphaBlending();
@@ -121,6 +148,19 @@ void FillrateNomNomNom::update()
         (*iter).Strength -= msecs / 3000; // Making this number bigger increases the falloff time of the lights
         if ((*iter).Strength < 0)
             (*iter).Strength = 0;
+    }
+
+    // Generate new vertex data
+    vector<Particle *> *particleList = particleSystem_.GetParticles();
+    gl::VboMesh::VertexIter vboIter = vbo_.mapVertexBuffer();
+    for (vector<Particle *>::iterator iter = particleList->begin(); iter != particleList->end(); iter ++)
+    {
+        float size = (*iter)->Size / 2;
+        Vec3f position = (*iter)->Position;
+        vboIter.setPosition(position + Vec3f(-size, -size, 0));         ++ vboIter; 
+        vboIter.setPosition(position + Vec3f(-size, size, 0));          ++ vboIter;
+        vboIter.setPosition(position + Vec3f(size, size, 0));           ++ vboIter;
+        vboIter.setPosition(position + Vec3f(size, -size, 0));          ++ vboIter;
     }
 }
 
@@ -181,15 +221,7 @@ void FillrateNomNomNom::draw()
         }
     }
 
-    for (vector<Particle *>::iterator iter = particleList->begin(); iter != particleList->end(); iter ++)
-    {
-        float size = (*iter)->Size / 2;
-        gl::pushModelView();
-        gl::translate((*iter)->Position);
-        gl::drawSolidRect(Rectf(-size, -size, size, size));
-        gl::popModelView();
-        //gl::drawBillboard((*iter)->Position, Vec2f((*iter)->Size, (*iter)->Size), 0, right, up);
-    }
+    gl::draw(vbo_);
 
     #ifdef _DEBUG
         stringstream fpsString;
