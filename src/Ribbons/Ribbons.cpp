@@ -20,9 +20,9 @@ using namespace std;
 
 struct Ribbon
 {
-    Ribbon() : Velocity(Vec3f(0, 0, 0))
+    Ribbon() : Velocity(Vec3f(0, 0, 0.0001f))
     {
-        Position.push_front(Vec3f(Rand::randFloat(-10, 10), Rand::randFloat(-10, 10), Rand::randFloat(-10, 10)));
+        Position.push_front(Vec3f(Rand::randFloat(-15, 15), Rand::randFloat(-15, 15), Rand::randFloat(-15, 15)));
     }
 
     Vec3f Velocity;
@@ -58,36 +58,55 @@ void Ribbons::update()
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
 
-    cameraTarget_ = Vec3f(0, 0, 0);
-
     int i = 0;
     for (vector<Ribbon *>::iterator iter = ribbons_.begin(); iter != ribbons_.end(); iter ++, i ++)
     {
+        // Trim tail
         Ribbon *current = (*iter);
         current->Position.push_front(current->Position[0]);
         if (current->Position.size() > TAIL_LENGTH)
             current->Position.pop_back();
 
-        Vec3f force = Vec3f(0, 0, 0);
+        // Resolve forces
+        Vec3f force = Vec3f::zero();
         for (int j = 0; j < NUM_RIBBONS; j ++)
         {
             if (current == ribbons_[j])
                 continue;
-            Vec3f diff = current->Position[0] - ribbons_[j]->Position[0];
-            float distance = diff.length() - OPTIMAL_DISTANCE;
-            float tweakedForce = distance * distance * distance;
-            Vec3f dir = diff.normalized();
-            force += dir * tweakedForce;
+
+            float distSquared = current->Position[0].distanceSquared(ribbons_[j]->Position[0]);
+            if (distSquared == 0)
+                continue;
+
+            if (distSquared > IGNORE_DISTANCE * IGNORE_DISTANCE)
+                continue;
+
+            Vec3f dir = (current->Position[0] - ribbons_[j]->Position[0]).normalized();
+
+            if (distSquared > OPTIMAL_DISTANCE * OPTIMAL_DISTANCE)
+            {
+                float dist = ::sqrt(distSquared);
+                force += dir * (math<float>::cos((dist - OPTIMAL_DISTANCE) * 2 * M_PI / (IGNORE_DISTANCE - OPTIMAL_DISTANCE)) * -1 + 1);
+                // attract
+            }
+            else
+            {
+                force += dir * ((OPTIMAL_DISTANCE * OPTIMAL_DISTANCE) / distSquared - 1) * -1;
+                // repell
+            }
         }
 
-        current->Velocity += force.normalized() * -1 * RIBBON_ACCEL * msecs;
-        if (current->Velocity.length() > 0)
-            current->Velocity.normalize();
-        current->Position[0] += current->Velocity * RIBBON_SPEED * msecs;
-     
-        cameraTarget_ += current->Position[0] * Vec3f(1, 1, 0);
+        if (force.length() > 0)
+            force.normalize();
+        force += current->Position[0].normalized() * CENTRE_PULL;   // Pull back towards centre
+
+        current->Velocity += force * -1 * msecs * 0.00001f;
+        if (current->Velocity.length() > RIBBON_MAX_SPEED)
+            current->Velocity = current->Velocity.normalized() * RIBBON_MAX_SPEED;
+        else if (current->Velocity.length() < RIBBON_MIN_SPEED)
+            current->Velocity = current->Velocity.normalized() * RIBBON_MIN_SPEED;
+        current->Position[0] += current->Velocity * msecs;
     }
-    cameraTarget_ /= NUM_RIBBONS;
 }
 
 void Ribbons::draw()
@@ -97,9 +116,7 @@ void Ribbons::draw()
     Vec3f cameraPos = Vec3f(0, 0, -20);
 
     CameraPersp persp = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 0.1f, 200);
-    // persp.lookAt(cameraPos, cameraTarget_);
-    // persp.lookAt(ribbons_[0]->Position[0], cameraTarget_);
-    persp.lookAt(ribbons_[0]->Position[0], ribbons_[0]->Position[0] + ribbons_[0]->Velocity);
+    persp.lookAt(cameraPos, Vec3f::zero());
     gl::setMatrices(persp);
 
     for (vector<Ribbon *>::iterator iter = ribbons_.begin(); iter != ribbons_.end(); iter ++)
