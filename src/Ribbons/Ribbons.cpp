@@ -38,7 +38,6 @@ public:
 
 private:
     vector<Ribbon *> ribbons_;
-    Vec3f cameraTarget_;
     Timer timer_;
 };
 
@@ -75,9 +74,6 @@ void Ribbons::update()
                 continue;
 
             float distSquared = current->Position[0].distanceSquared(ribbons_[j]->Position[0]);
-            if (distSquared == 0)
-                continue;
-
             if (distSquared > IGNORE_DISTANCE * IGNORE_DISTANCE)
                 continue;
 
@@ -86,24 +82,25 @@ void Ribbons::update()
             if (distSquared > OPTIMAL_DISTANCE * OPTIMAL_DISTANCE)
             {
                 float dist = ::sqrt(distSquared);
-                force += dir * (math<float>::cos((dist - OPTIMAL_DISTANCE) * 2 * M_PI / (IGNORE_DISTANCE - OPTIMAL_DISTANCE)) * -1 + 1);
+                force += dir * (math<float>::cos((dist - OPTIMAL_DISTANCE) * 2 * static_cast<float>(M_PI) / (IGNORE_DISTANCE - OPTIMAL_DISTANCE)) * -1 + 1);
                 // attract
             }
             else
             {
-                force += dir * ((OPTIMAL_DISTANCE * OPTIMAL_DISTANCE) / distSquared - 1) * -1;
+                force += dir * ((OPTIMAL_DISTANCE * OPTIMAL_DISTANCE) / distSquared - 1) * -1 * REPELL_MODIFIER;
                 // repell
             }
         }
 
         if (force.length() > 0)
             force.normalize();
-        force += current->Position[0].normalized() * CENTRE_PULL;   // Pull back towards centre
+        force += current->Position[0] * CENTRE_PULL;   // Pull back towards centre
 
         current->Velocity += force * -1 * msecs * 0.00001f;
-        if (current->Velocity.length() > RIBBON_MAX_SPEED)
+        float speedSq = current->Velocity.lengthSquared();
+        if (speedSq > RIBBON_MAX_SPEED * RIBBON_MAX_SPEED)
             current->Velocity = current->Velocity.normalized() * RIBBON_MAX_SPEED;
-        else if (current->Velocity.length() < RIBBON_MIN_SPEED)
+        else if (speedSq < RIBBON_MIN_SPEED * RIBBON_MIN_SPEED)
             current->Velocity = current->Velocity.normalized() * RIBBON_MIN_SPEED;
         current->Position[0] += current->Velocity * msecs;
     }
