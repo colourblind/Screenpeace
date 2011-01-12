@@ -29,6 +29,20 @@ struct Ribbon
     deque<Vec3f> Position;
 };
 
+struct Predator
+{
+    Predator() : Position(Vec3f(Rand::randFloat(-15, 15), Rand::randFloat(-15, 15), Rand::randFloat(-15, 15))), 
+                    Velocity(Vec3f(0, 0, 0.0001f)),
+                    Target(Vec3f(Rand::randFloat(-5, 5), Rand::randFloat(-5, 5), Rand::randFloat(-5, 5))),
+                    TimeToRetarget(4000)
+    { }
+
+    Vec3f Position;
+    Vec3f Velocity;
+    Vec3f Target;
+    float TimeToRetarget;
+};
+
 class Ribbons : public APP_TYPE
 {
 public:
@@ -38,6 +52,7 @@ public:
 
 private:
     vector<Ribbon *> ribbons_;
+    Predator predator_;
     Timer timer_;
 };
 
@@ -56,6 +71,17 @@ void Ribbons::update()
     timer_.stop();
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
+
+    predator_.Velocity += (predator_.Position - predator_.Target).normalized() * -0.0005f;
+    if (predator_.Velocity.lengthSquared() > 0.0001f)
+        predator_.Velocity = predator_.Velocity.normalized() * 0.01f;
+    predator_.Position += predator_.Velocity * msecs;
+    predator_.TimeToRetarget -= msecs;
+    if (predator_.Position.distanceSquared(predator_.Target) < 0.25f || predator_.TimeToRetarget < 0)
+    {
+        predator_.Target = Vec3f(Rand::randFloat(-8, 8), Rand::randFloat(-8, 8), Rand::randFloat(-8, 8));
+        predator_.TimeToRetarget = 4000;
+    }
 
     int i = 0;
     for (vector<Ribbon *>::iterator iter = ribbons_.begin(); iter != ribbons_.end(); iter ++, i ++)
@@ -96,6 +122,12 @@ void Ribbons::update()
             force.normalize();
         force += current->Position[0] * CENTRE_PULL;   // Pull back towards centre
 
+        if (current->Position[0].distanceSquared(predator_.Position) < 49)
+        {
+            Vec3f predDir = (current->Position[0] - predator_.Position).normalized();
+            force += predDir * -4.0f;
+        }
+
         current->Velocity += force * -1 * msecs * 0.00001f;
         float speedSq = current->Velocity.lengthSquared();
         if (speedSq > RIBBON_MAX_SPEED * RIBBON_MAX_SPEED)
@@ -115,6 +147,14 @@ void Ribbons::draw()
     CameraPersp persp = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 0.1f, 200);
     persp.lookAt(cameraPos, Vec3f::zero());
     gl::setMatrices(persp);
+
+    if (SHOW_PREDATOR)
+    {
+        gl::color(Color(1, 0, 0));
+        gl::drawCube(predator_.Position, Vec3f(1, 1, 1));
+        gl::color(Color(0, 1, 0));
+        gl::drawCube(predator_.Target, Vec3f(1, 1, 1));
+    }
 
     for (vector<Ribbon *>::iterator iter = ribbons_.begin(); iter != ribbons_.end(); iter ++)
     {
