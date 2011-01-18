@@ -15,7 +15,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StrawberryFieldsForever", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MagicalMysteryTour", "MagicalMysteryTour\MagicalMysteryTour.vcproj", "{1CBD2477-ADB0-4D02-A6E4-CE4BA6EF64E1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ribbons", "Ribbons\Ribbons.vcproj", "{E3BB7E6E-71CE-444F-9E39-D7AF309751F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfAFeather", "OfAFeather\OfAFeather.vcproj", "{E3BB7E6E-71CE-444F-9E39-D7AF309751F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
