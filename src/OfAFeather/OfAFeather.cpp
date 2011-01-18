@@ -43,7 +43,7 @@ struct Predator
     float TimeToRetarget;
 };
 
-class Ribbons : public APP_TYPE
+class OfAFeather : public APP_TYPE
 {
 public:
     virtual void setup();
@@ -56,7 +56,7 @@ private:
     Timer timer_;
 };
 
-void Ribbons::setup()
+void OfAFeather::setup()
 {
     Rand::randomize();
 
@@ -66,7 +66,7 @@ void Ribbons::setup()
     gl::enableAlphaBlending();
 }
 
-void Ribbons::update()
+void OfAFeather::update()
 {
     timer_.stop();
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
@@ -138,7 +138,7 @@ void Ribbons::update()
     }
 }
 
-void Ribbons::draw()
+void OfAFeather::draw()
 {
     gl::clear(Color(0, 0, 0.5f));
 
@@ -170,7 +170,7 @@ void Ribbons::draw()
 }
 
 #ifdef SCREENSAVER
-    CINDER_APP_SCREENSAVER(Ribbons, RendererGl)
+    CINDER_APP_SCREENSAVER(OfAFeather, RendererGl)
 #else
-    CINDER_APP_BASIC(Ribbons, RendererGl)
+    CINDER_APP_BASIC(OfAFeather, RendererGl)
 #endif

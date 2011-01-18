@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Ribbons"
+	Name="OfAFeather"
 	ProjectGUID="{E3BB7E6E-71CE-444F-9E39-D7AF309751F0}"
-	RootNamespace="Ribbons"
+	RootNamespace="OfAFeather"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -495,7 +495,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Ribbons.cpp"
+				RelativePath=".\OfAFeather.cpp"
 				>
 			</File>
 		</Filter>
