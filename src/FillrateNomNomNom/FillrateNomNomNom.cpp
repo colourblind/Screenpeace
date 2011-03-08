@@ -27,8 +27,9 @@ using namespace std;
 
 struct Light
 {
-    Light() { Position = Vec3f(0, 0, 0); Strength = 0; }
-    Light(Vec3f position, float strength) { Position = position; Strength = strength; }
+    Light() : Position(Vec3f(0, 0, 0)), Strength(1) { }
+    Light(Vec3f position) : Position(position), Strength(1) { }
+    Light(Vec3f position, float strength) : Position(position), Strength(strength) { }
 
     Vec3f Position;
     float Strength;
@@ -140,7 +141,7 @@ void FillrateNomNomNom::update()
         if (lights_.size() > 3)
             lights_.pop_back();
 
-        lights_.push_front(Light(attractor->Position, 0.5));
+        lights_.push_front(Light(attractor->Position));
     }
 
     for (deque<Light>::iterator iter = lights_.begin(); iter != lights_.end(); iter ++)
@@ -205,19 +206,14 @@ void FillrateNomNomNom::draw()
     {
         stringstream posName;
         posName << "lightPos" << i;
-        stringstream strName;
-        strName << "lightStr" << i;
-        string foo = strName.str();
         if (iter != lights_.end())
         {
             program_.uniform(posName.str(), (*iter).Position);
-            program_.uniform(strName.str(), (*iter).Strength); 
             iter ++;
         }
         else
         {
             program_.uniform(posName.str(), Vec3f());
-            program_.uniform(strName.str(), 0); 
         }
     }
 
