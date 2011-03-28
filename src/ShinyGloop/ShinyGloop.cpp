@@ -12,6 +12,8 @@
 #include "Constants.h"
 #include "Resources.h"
 
+#include <vector>
+
 using namespace cinder;
 using namespace cinder::app;
 
@@ -71,28 +73,23 @@ void ShinyGloop::setup()
 
     Perlin perlin(9);
 
+    // Create verts
     for (int i = 0; i < MAP_SIZE; i ++)
-    {
         for (int j = 0; j < MAP_SIZE; j ++)
-        {
-            float foo = perlin.fBm(static_cast<float>(i) / MAP_SIZE, static_cast<float>(j) / MAP_SIZE);
-            heightMap_[i][j] = foo;
-        }
-    }
+            mesh_.appendVertex(Vec3f(i, j, perlin.fBm(static_cast<float>(i) / MAP_SIZE, static_cast<float>(j) / MAP_SIZE) * HEIGHT_SCALE));
 
-    // TODO: use proper indexing. Currently lots of duped verts
-    for (int i = 0; i < MAP_SIZE - 1; i ++)
+    // Create indices
+    for (int i = 1; i < MAP_SIZE; i ++)
     {
-        for (int j = 0; j < MAP_SIZE - 1; j ++)
+        for (int j = 1; j < MAP_SIZE; j ++)
         {
-            mesh_.appendVertex(Vec3f(i, j, heightMap_[i][j] * HEIGHT_SCALE));
-            mesh_.appendVertex(Vec3f(i, j + 1, heightMap_[i][j + 1] * HEIGHT_SCALE));
-            mesh_.appendVertex(Vec3f(i + 1, j, heightMap_[i + 1][j] * HEIGHT_SCALE));
-            mesh_.appendVertex(Vec3f(i + 1, j + 1, heightMap_[i + 1][j + 1] * HEIGHT_SCALE));
+            int index0 = (i - 1) * MAP_SIZE + (j - 1);
+            int index1 = (i - 1) * MAP_SIZE + j;
+            int index2 = i * MAP_SIZE + (j - 1);
+            int index3 = i * MAP_SIZE + j;
 
-            int startIndex = (i * (MAP_SIZE - 1) + j) * 4;
-            mesh_.appendTriangle(startIndex, startIndex + 2, startIndex + 3);
-            mesh_.appendTriangle(startIndex, startIndex + 1, startIndex + 3);
+            mesh_.appendTriangle(index0, index1, index2);
+            mesh_.appendTriangle(index1, index2, index3);
         }
     }
 }
