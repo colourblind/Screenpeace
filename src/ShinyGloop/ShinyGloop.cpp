@@ -6,7 +6,6 @@
 #include "cinder/Rand.h"
 #include "cinder/Timer.h"
 #include "cinder/TriMesh.h"
-#include "cinder/Vector.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
 #include "Constants.h"
@@ -22,6 +21,12 @@ using namespace cinder::app;
 #else
     #define APP_TYPE    AppBasic
 #endif
+
+int sp_clamp(int i, int upperBound)
+{
+    int result = i % upperBound;
+    return result < 0 ? result + upperBound : result;
+}
 
 class ShinyGloop : public APP_TYPE
 {
@@ -62,10 +67,6 @@ void ShinyGloop::setup()
 
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
 
-    camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 1, 500);
-    camera_.lookAt(Vec3f(0, 0, 12), Vec3f(100, 0, 12), Vec3f(0, 0, 1));
-    // camera_.lookAt(Vec3f(0, 0, 300), Vec3f(0, 0, 0), Vec3f(0, 0, 1));
-
     rotation_ = 100;
 
     gl::enableDepthRead();
@@ -92,6 +93,38 @@ void ShinyGloop::setup()
             mesh_.appendTriangle(index1, index2, index3);
         }
     }
+
+    std::vector<Vec3f> verts = mesh_.getVertices();
+    for (int i = 0; i < MAP_SIZE; i ++)
+    {
+        for (int j = 0; j < MAP_SIZE; j ++)
+        {
+            Vec3f current = verts[i * MAP_SIZE + j];
+
+            int index0 = sp_clamp(i + 1, MAP_SIZE) * MAP_SIZE + j;
+            int index1 = i * MAP_SIZE + sp_clamp(j + 1, MAP_SIZE);
+            int index2 = sp_clamp(i - 1, MAP_SIZE) * MAP_SIZE + j;
+            int index3 = i * MAP_SIZE + sp_clamp(j - 1, MAP_SIZE);
+
+            Vec3f a = verts[index0] - current;
+            Vec3f b = verts[index1] - current;
+            Vec3f c = verts[index2] - current;
+            Vec3f d = verts[index3] - current;
+
+            Vec3f ab = a.cross(b);
+            Vec3f bc = b.cross(c);
+            Vec3f cd = c.cross(d);
+            Vec3f da = d.cross(a);
+
+            float foo = ab.length();
+            float bar = bc.length();
+
+            Vec3f t = ab.normalized() + bc.normalized() + cd.normalized() + da.normalized();
+            t.z = NORMAL_SCALE;
+
+            mesh_.appendNormal(t.normalized());
+        }
+    }
 }
 
 void ShinyGloop::update()
@@ -109,9 +142,14 @@ void ShinyGloop::draw()
 {
     gl::clear(Color(0, 0, 0));
 
+    camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 1, 500);
+    camera_.lookAt(Vec3f(0, 0, 12), Vec3f(100, 0, 12), Vec3f(0, 0, 1));
+    // camera_.lookAt(Vec3f(0, 0, 300), Vec3f(0, 0, 0), Vec3f(0, 0, 1));
+
     gl::setMatrices(camera_);
     
     program_.bind();
+    program_.uniform("cameraMat", camera_.getModelViewMatrix().inverted());
 
     glEnable(GL_TEXTURE_CUBE_MAP);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap_);
@@ -122,11 +160,6 @@ void ShinyGloop::draw()
     gl::translate(Vec3f(MAP_SIZE * -0.5f, MAP_SIZE * -0.5f, 0));
     gl::draw(mesh_);
     gl::popModelView();
-
-    //Vec3f right, up;
-    //camera_.getBillboardVectors(&right, &up);
-    //gl::color(Color(1, 0, 0));
-    //gl::drawBillboard(Vec3f(0, 0, 0), Vec2f(256, 256), 0, right, up);
 }
 
 #ifdef SCREENSAVER
