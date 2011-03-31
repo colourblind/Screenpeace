@@ -77,7 +77,7 @@ void ShinyGloop::setup()
     // Create verts
     for (int i = 0; i < MAP_SIZE; i ++)
         for (int j = 0; j < MAP_SIZE; j ++)
-            mesh_.appendVertex(Vec3f(i, j, perlin.fBm(static_cast<float>(i) / MAP_SIZE, static_cast<float>(j) / MAP_SIZE) * HEIGHT_SCALE));
+            mesh_.appendVertex(Vec3f(i * 1.2f, j, perlin.fBm(static_cast<float>(i) / MAP_SIZE, static_cast<float>(j) / MAP_SIZE) * HEIGHT_SCALE));
 
     // Create indices
     for (int i = 1; i < MAP_SIZE; i ++)
@@ -142,9 +142,15 @@ void ShinyGloop::draw()
 {
     gl::clear(Color(0, 0, 0));
 
-    camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 1, 500);
-    camera_.lookAt(Vec3f(0, 0, 12), Vec3f(100, 0, 12), Vec3f(0, 0, 1));
-    // camera_.lookAt(Vec3f(0, 0, 300), Vec3f(0, 0, 0), Vec3f(0, 0, 1));
+    camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 4, 500);
+
+    if (SEA_LEVEL_CAMERA)
+        camera_.lookAt(Vec3f(0, 0, 12), Vec3f(100, 0, 12), Vec3f(0, 0, 1));
+    else
+    {
+        Vec3f up = Vec3f(-sin(rotation_ * M_PI / 180), cos(rotation_ * M_PI / 180), 0);
+        camera_.lookAt(Vec3f(0, 0, 150), Vec3f(0, 0, 0), up);
+    }
 
     gl::setMatrices(camera_);
     
@@ -157,7 +163,7 @@ void ShinyGloop::draw()
     gl::color(ColorA(1, 1, 1, 1));
     gl::pushModelView();
     gl::rotate(Vec3f(0, 0, rotation_));
-    gl::translate(Vec3f(MAP_SIZE * -0.5f, MAP_SIZE * -0.5f, 0));
+    gl::translate(Vec3f(MAP_SIZE * 1.2f * -0.5f, MAP_SIZE * -0.5f, 0));
     gl::draw(mesh_);
     gl::popModelView();
 }
