@@ -1,0 +1,7 @@
+#include "Resources.h"
+
+RES_CLOUD_IMG
+RES_FONT_DEFINITION
+RES_FONT_IMG1
+RES_FONT_IMG2
+

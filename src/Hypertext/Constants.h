@@ -1,0 +1,7 @@
+#ifndef HYPERTEXT_CONSTANTS_H
+#define HYPERTEXT_CONSTANTS_H
+
+const int NUM_SNIPPETS = 10;
+const float RANGE = 400;
+
+#endif // HYPERTEXT_CONSTANTS_H
