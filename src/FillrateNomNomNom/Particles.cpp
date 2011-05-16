@@ -64,7 +64,6 @@ void ParticleSystem::Update(float msecs)
             currentAttractor = *attractorIter;
             Vec3f dir = (currentAttractor->Position - currentParticle->Position).normalized();
             currentParticle->Velocity += dir * (currentAttractor->Mass / currentParticle->Mass) * 0.01f;
-            currentParticle->Velocity += perlin_.dfBm(currentParticle->Position * 0.01f) * chaos_; // lolrandom
             currentParticle->Velocity *= 0.95f; // friction
         }
         
@@ -72,6 +71,8 @@ void ParticleSystem::Update(float msecs)
         for (vector<Vec3f>::iterator forceIter = forces_.begin(); forceIter != forces_.end(); forceIter ++)
             currentParticle->Velocity += *forceIter;
             
+        currentParticle->Velocity += perlin_.dfBm(currentParticle->Position * 0.01f) * chaos_; // lolrandom        
+
         // Set final particle position
         currentParticle->Position += currentParticle->Velocity * msecs;
     }
