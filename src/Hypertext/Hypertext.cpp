@@ -76,11 +76,16 @@ private:
     void GenerateMesh(int index);
 
     Timer timer_;
+    CameraPersp camera_;
     Snippet snippets_[NUM_SNIPPETS];
     int nextSnippet_;
     int prevSnippet_;
     float totalTravelTime_;
     float currentTravelTime_;
+    Vec3f drift_;
+    bool exasperatedSigh_;
+    Vec3f cameraStart_;
+    Vec3f cameraEnd_;
 
     vector<gl::Texture> fontPages_;
     Glyph glyphs_[256];
@@ -88,12 +93,17 @@ private:
 
 void Hypertext::setup()
 {
+    exasperatedSigh_ = true;
+    drift_ =  Vec3f(0, 0, 0);
+
     Rand::randomize();
 
     nextSnippet_ = Rand::randInt(NUM_SNIPPETS);
     prevSnippet_ = nextSnippet_;
-    totalTravelTime_ = 2000;
+    totalTravelTime_ = PAUSE_TIME;
     currentTravelTime_ = 0;
+
+    cameraStart_ = cameraEnd_ = (snippets_[nextSnippet_].position + snippets_[nextSnippet_].forward * -RANGE);
 
     gl::Texture::Format format;
     format.enableMipmapping(true);
@@ -115,8 +125,9 @@ void Hypertext::setup()
         GenerateMesh(i);
 
     gl::enableAlphaBlending();
-    //gl::disableDepthRead();
-    //gl::disableDepthWrite();
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+    gl::enableAlphaTest();
 }
 
 void Hypertext::update()
@@ -132,34 +143,44 @@ void Hypertext::update()
         {
             prevSnippet_ = nextSnippet_;
             nextSnippet_ = Rand::randInt(NUM_SNIPPETS);
+            totalTravelTime_ = MOVE_TIME;
+            cameraEnd_ = (snippets_[nextSnippet_].position + snippets_[nextSnippet_].forward * -RANGE);
         }
         else
         {
             prevSnippet_ = nextSnippet_;
+            totalTravelTime_ = PAUSE_TIME;
+            cameraEnd_ = (snippets_[nextSnippet_].position + snippets_[nextSnippet_].forward * -RANGE) + drift_ * 0.2f;
         }
         currentTravelTime_ = 0;
+        cameraStart_ = camera_.getEyePoint();
     }
 }
 
 void Hypertext::draw()
 {
-    float windowWidth = static_cast<float>(getWindowWidth());
-    float windowHeight = static_cast<float>(getWindowHeight());
+    if (exasperatedSigh_)
+    {
+        float windowWidth = static_cast<float>(getWindowWidth());
+        float windowHeight = static_cast<float>(getWindowHeight());
+        camera_ = CameraPersp(windowWidth, windowHeight, 60, 1, 1000);
+        exasperatedSigh_ = false;
+    }
 
     gl::clear();
-
-    CameraPersp camera = CameraPersp(windowWidth, windowHeight, 60, 1, 1000);
 
     float lerp = currentTravelTime_ / totalTravelTime_;
 
     Vec3f camUp = (snippets_[nextSnippet_].up - snippets_[prevSnippet_].up) * lerp + snippets_[prevSnippet_].up;
     Vec3f camTarget = (snippets_[nextSnippet_].position - snippets_[prevSnippet_].position) * lerp + snippets_[prevSnippet_].position;
-    Vec3f eyePos = ((snippets_[nextSnippet_].position + snippets_[nextSnippet_].forward * -RANGE)
-            - (snippets_[prevSnippet_].position + snippets_[prevSnippet_].forward * -RANGE)) * lerp
-            + (snippets_[prevSnippet_].position + snippets_[prevSnippet_].forward * -RANGE);
+    Vec3f eyePos = (cameraEnd_ - cameraStart_) * lerp + cameraStart_;
 
-    camera.lookAt(eyePos, camTarget, camUp);
-    gl::setMatrices(camera);
+    if (prevSnippet_ != nextSnippet_)
+        drift_ = (eyePos - camera_.getEyePoint()) * 60;
+
+    camera_.lookAt(eyePos, camTarget, camUp);
+
+    gl::setMatrices(camera_);
 
     for (int i = 0; i < NUM_SNIPPETS; i ++)
     {
