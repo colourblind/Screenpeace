@@ -50,8 +50,7 @@ struct Snippet
 {
     Snippet() : 
         text("foo"), 
-        position(Vec3f(Rand::randFloat(-200, 200), Rand::randFloat(-200, 200), Rand::randFloat(-200, 200))),
-        // position(Vec3f(0, 0, 0)),
+        position(Vec3f(Rand::randFloat(-SPREAD, SPREAD), Rand::randFloat(-SPREAD, SPREAD), Rand::randFloat(-SPREAD, SPREAD))),
         up(Vec3f(0, -1, 0)),
         forward(Vec3f(Rand::randFloat(-1, 1), 0, Rand::randFloat(-1, 1))),
         totalSize(Vec2f(0, 0))
