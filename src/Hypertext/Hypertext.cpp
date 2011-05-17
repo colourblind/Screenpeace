@@ -1,6 +1,7 @@
 #include "cinder/app/AppScreenSaver.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/Camera.h"
+#include "cinder/DataSource.h"
 #include "cinder/ImageIO.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
@@ -10,6 +11,7 @@
 #include "Constants.h"
 #include "Resources.h"
 
+#include <sstream>
 #include <vector>
 
 using namespace cinder;
@@ -64,6 +66,27 @@ struct Snippet
     gl::VboMesh mesh[2];
     Vec2f totalSize;
 };
+
+string join(vector<string> s, int start, int length, string delim)
+{
+    string str;
+    for (int i = 0; i < length; i ++)
+        str += (i == 0 ? "" : delim) + s[start + i];
+    return str;
+}
+
+vector<string> split(string s, char delim)
+{
+    vector<string> tokens;
+
+    stringstream ss(s);
+    string item;
+    while(getline(ss, item, delim)) {
+        tokens.push_back(item);
+    }
+
+    return tokens;
+}
 
 class Hypertext : public APP_TYPE
 {
@@ -121,8 +144,21 @@ void Hypertext::setup()
         glyphs_[index] = Glyph(*child);
     }
 
+    DataSourceRef source = loadResource(RES_TEXT);
+    DataSource &s = *source.get();
+    Buffer b = s.getBuffer();
+
+    string data = string(reinterpret_cast<char *>(b.getData()), b.getDataSize());
+    vector<string> tokens = split(data, '\n');
+
     for (int i = 0; i < NUM_SNIPPETS; i ++)
+    {
+        snippets_[i] = Snippet(); // Need to re-init these now we've seeded rand correctly
+        int numLines = Rand::randInt(8);
+        int startLine = Rand::randInt(tokens.size() - numLines);
+        snippets_[i].text = join(tokens, startLine, numLines, "\n");
         GenerateMesh(i);
+    }
 
     gl::enableAlphaBlending();
     gl::enableDepthRead();
@@ -161,9 +197,7 @@ void Hypertext::draw()
 {
     if (exasperatedSigh_)
     {
-        float windowWidth = static_cast<float>(getWindowWidth());
-        float windowHeight = static_cast<float>(getWindowHeight());
-        camera_ = CameraPersp(windowWidth, windowHeight, 60, 1, 1000);
+        camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 10, 2000);
         exasperatedSigh_ = false;
     }
 
@@ -197,10 +231,16 @@ void Hypertext::draw()
         else
             gl::color(Color(1, 1, 1));
 
-        fontPages_[0].enableAndBind();
-        gl::drawArrays(snippets_[i].mesh[0], 0, snippets_[i].mesh[0].getNumVertices());
-        fontPages_[1].enableAndBind();
-        gl::drawArrays(snippets_[i].mesh[1], 0, snippets_[i].mesh[1].getNumVertices());
+        if (snippets_[i].mesh[0] != NULL)
+        {
+            fontPages_[0].enableAndBind();
+            gl::drawArrays(snippets_[i].mesh[0], 0, snippets_[i].mesh[0].getNumVertices());
+        }
+        if (snippets_[i].mesh[1] != NULL)
+        {
+            fontPages_[1].enableAndBind();
+            gl::drawArrays(snippets_[i].mesh[1], 0, snippets_[i].mesh[1].getNumVertices());
+        }
 
         gl::popModelView();
     }
@@ -226,9 +266,18 @@ void Hypertext::GenerateMesh(int index)
         int glyphIndex = static_cast<int>(snippets_[index].text[i]);
         Glyph current = glyphs_[glyphIndex];
         int j = current.page;
+        if (j < 0 || j > 1)
+        {
+            if (glyphIndex == 13)
+            {
+                currentY += 32; // line height
+                currentX = 0;
+            }
+            continue;
+        }
 
-        int x = current.offsetX + currentX;
-        int y = current.offsetY + currentY;
+        float x = current.offsetX + currentX;
+        float y = current.offsetY + currentY;
 
         positions[j].push_back(Vec3f(x, y, 0));
         positions[j].push_back(Vec3f(x, y + current.height, 0));
@@ -253,15 +302,20 @@ void Hypertext::GenerateMesh(int index)
     layout.setStaticPositions();
     layout.setStaticTexCoords2d();
     
-    snippets_[index].mesh[0] = gl::VboMesh(positions[0].size(), indices[0].size(), layout, GL_QUADS); 
-    snippets_[index].mesh[0].bufferPositions(positions[0]);
-    snippets_[index].mesh[0].bufferIndices(indices[0]);
-    snippets_[index].mesh[0].bufferTexCoords2d(0, texCoords[0]);
-
-    snippets_[index].mesh[1] = gl::VboMesh(positions[1].size(), indices[1].size(), layout, GL_QUADS);
-    snippets_[index].mesh[1].bufferPositions(positions[1]);
-    snippets_[index].mesh[1].bufferIndices(indices[1]);
-    snippets_[index].mesh[1].bufferTexCoords2d(0, texCoords[1]);
+    if (positions[0].size() > 0)
+    {
+        snippets_[index].mesh[0] = gl::VboMesh(positions[0].size(), indices[0].size(), layout, GL_QUADS); 
+        snippets_[index].mesh[0].bufferPositions(positions[0]);
+        snippets_[index].mesh[0].bufferIndices(indices[0]);
+        snippets_[index].mesh[0].bufferTexCoords2d(0, texCoords[0]);
+    }
+    if (positions[1].size() > 0)
+    {
+        snippets_[index].mesh[1] = gl::VboMesh(positions[1].size(), indices[1].size(), layout, GL_QUADS);
+        snippets_[index].mesh[1].bufferPositions(positions[1]);
+        snippets_[index].mesh[1].bufferIndices(indices[1]);
+        snippets_[index].mesh[1].bufferTexCoords2d(0, texCoords[1]);
+    }
 }
 
 #ifdef SCREENSAVER

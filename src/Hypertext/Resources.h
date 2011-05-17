@@ -9,5 +9,6 @@
 #define RES_FONT_DEFINITION CINDER_RESOURCE(../../resources/, hypertext_font.fnt, 129, XML)
 #define RES_FONT_IMG1       CINDER_RESOURCE(../../resources/, hypertext_font_1.png, 130, PNG)
 #define RES_FONT_IMG2       CINDER_RESOURCE(../../resources/, hypertext_font_2.png, 131, PNG)
+#define RES_TEXT            CINDER_RESOURCE(./, Hypertext.cpp, 132, XML)  // http://inception.davepedu.com/
 
 #endif // HYPERTEXT_RESOURCES_H
