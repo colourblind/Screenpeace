@@ -260,6 +260,8 @@ void Hypertext::GenerateMesh(int index)
 
     float texScale = 1.0f / 256;
 
+    Vec2f totalSize = Vec2f(0, 0);
+
     for (int i = 0; i < snippets_[index].text.length(); i ++)
     {
         int glyphIndex = static_cast<int>(snippets_[index].text[i]);
@@ -294,7 +296,17 @@ void Hypertext::GenerateMesh(int index)
         texCoords[j].push_back(Vec2f(current.x + current.width, current.y) * texScale);
 
         currentX += current.advanceX;
+
+        totalSize.x = max(totalSize.x, x + current.width);
+        totalSize.y = max(totalSize.y, y + 32);
     }
+
+    Vec3f shim = Vec3f(totalSize * 0.5f);
+    for (int i = 0; i < positions[0].size(); i ++)
+        positions[0][i] -= shim;
+    for (int i = 0; i < positions[1].size(); i ++)
+        positions[1][i] -= shim;
+
 
     gl::VboMesh::Layout layout;
     layout.setStaticIndices();
