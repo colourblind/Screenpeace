@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfAFeather", "OfAFeather\Of
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShinyGloop", "ShinyGloop\ShinyGloop.vcproj", "{571F71B2-9A02-4E7B-BE3F-6C91DF1654B4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hypertext", "Hypertext\Hypertext.vcproj", "{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -137,6 +139,18 @@ Global
 		{571F71B2-9A02-4E7B-BE3F-6C91DF1654B4}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
 		{571F71B2-9A02-4E7B-BE3F-6C91DF1654B4}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
 		{571F71B2-9A02-4E7B-BE3F-6C91DF1654B4}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.Debug|Win32.Build.0 = Debug|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.Release|Win32.ActiveCfg = Release|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.Release|Win32.Build.0 = Release|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverDebug|Win32.ActiveCfg = ScreensaverDebug|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverDebug|Win32.Build.0 = ScreensaverDebug|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverDebugXP|Win32.ActiveCfg = ScreensaverDebugXP|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverDebugXP|Win32.Build.0 = ScreensaverDebugXP|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverRelease|Win32.ActiveCfg = ScreensaverRelease|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
+		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
