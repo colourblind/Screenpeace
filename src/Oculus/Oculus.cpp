@@ -28,7 +28,8 @@ public:
         startColour_(ColorA(Rand::randFloat(0, 0.5f), Rand::randFloat(0, 0.5f), 1), Rand::randFloat(0.5f, 1)),
         endColour_(ColorA(Rand::randFloat(0, 0.5f), Rand::randFloat(0, 0.5f), 1), Rand::randFloat(0.5f, 1)),
         rotation_(0),
-        rotationSpeed_(Rand::randFloat(-MAX_ROTATION_SPEED, MAX_ROTATION_SPEED))
+        rotationSpeed_(Rand::randFloat(-MAX_ROTATION_SPEED, MAX_ROTATION_SPEED)),
+        renderType_(Rand::randInt(2))
     {
         thickness_ = Rand::randFloat(0.1f, radius_ / 8);
         slices_ = static_cast<int>(angle_ * 10);
@@ -58,6 +59,7 @@ protected:
     int slices_;
     float rotation_;
     float rotationSpeed_;
+    int renderType_;
 };
 
 class Oculus : public APP_TYPE
@@ -79,18 +81,37 @@ void Segment::Render()
 
     float halfThick = thickness_ / 2;
     float angleStep = angle_ / slices_;
-    for (int i = 0; i < slices_; i ++)
+
+    if (renderType_ == 0)
     {
-        float currentAngle = startAngle_ + angleStep * i;
-        verts.push_back(Vec3f(sin(currentAngle) * (radius_ - halfThick), cos(currentAngle) * (radius_ - halfThick), 0));
-        verts.push_back(Vec3f(sin(currentAngle) * (radius_ + halfThick), cos(currentAngle) * (radius_ + halfThick), 0));
-        verts.push_back(Vec3f(sin(currentAngle + angleStep) * (radius_ + halfThick), cos(currentAngle + angleStep) * (radius_ + halfThick), 0));
-        verts.push_back(Vec3f(sin(currentAngle + angleStep) * (radius_ - halfThick), cos(currentAngle + angleStep) * (radius_ - halfThick), 0));
-        
-        colours.push_back(startColour_ + (endColour_ - startColour_) * i / slices_);
-        colours.push_back(startColour_ + (endColour_ - startColour_) * i / slices_);
-        colours.push_back(startColour_ + (endColour_ - startColour_) * (i + 1) / slices_);
-        colours.push_back(startColour_ + (endColour_ - startColour_) * (i + 1) / slices_);
+        for (int i = 0; i < slices_; i ++)
+        {
+            float currentAngle = startAngle_ + angleStep * i;
+            verts.push_back(Vec3f(sin(currentAngle) * (radius_ - halfThick), cos(currentAngle) * (radius_ - halfThick), 0));
+            verts.push_back(Vec3f(sin(currentAngle) * (radius_ + halfThick), cos(currentAngle) * (radius_ + halfThick), 0));
+            verts.push_back(Vec3f(sin(currentAngle + angleStep) * (radius_ + halfThick), cos(currentAngle + angleStep) * (radius_ + halfThick), 0));
+            verts.push_back(Vec3f(sin(currentAngle + angleStep) * (radius_ - halfThick), cos(currentAngle + angleStep) * (radius_ - halfThick), 0));
+            
+            colours.push_back(startColour_ + (endColour_ - startColour_) * i / slices_);
+            colours.push_back(startColour_ + (endColour_ - startColour_) * i / slices_);
+            colours.push_back(startColour_ + (endColour_ - startColour_) * (i + 1) / slices_);
+            colours.push_back(startColour_ + (endColour_ - startColour_) * (i + 1) / slices_);
+        }
+    }
+    else if (renderType_ == 1)
+    {
+        for (int i = 0; i < slices_; i ++)
+        {
+            float currentAngle = startAngle_ + angleStep * i;
+            verts.push_back(Vec3f(sin(currentAngle) * (radius_ - halfThick), cos(currentAngle) * (radius_ - halfThick), 0));
+            colours.push_back(startColour_ + (endColour_ - startColour_) * i / slices_);
+        }
+        for (int i = slices_ - 1; i >= 0; i --)
+        {
+            float currentAngle = startAngle_ + angleStep * i;
+            verts.push_back(Vec3f(sin(currentAngle) * (radius_ + halfThick), cos(currentAngle) * (radius_ + halfThick), 0));
+            colours.push_back(startColour_ + (endColour_ - startColour_) * i / slices_);
+        }
     }
     
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -101,7 +122,8 @@ void Segment::Render()
     gl::pushModelView();
     gl::rotate(Vec3f(0, 0, rotation_ * 180 / M_PI));
 
-	glDrawArrays(GL_QUADS, 0, verts.size());
+    GLenum drawType = renderType_ == 0 ? GL_QUADS : GL_LINE_LOOP;
+	glDrawArrays(drawType, 0, verts.size());
 
     gl::popModelView();
 
