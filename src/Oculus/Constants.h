@@ -2,6 +2,6 @@
 #define OCULUS_CONSTANTS_H
 
 const int NUM_SEGMENTS = 100;
-const float MAX_ROTATION_SPEED = 0.05f;
+const float MAX_ROTATION_SPEED = 0.001f;
 
 #endif // OCULUS_CONSTANTS_H

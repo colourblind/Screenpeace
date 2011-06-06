@@ -40,7 +40,7 @@ public:
     void Render();
     void Update(float msecs)
     {
-        rotation_ += rotationSpeed_;
+        rotation_ += rotationSpeed_ * msecs;
         if (rotation_ < 0)
             rotation_ += M_PI * 2;
         if (rotation_ > M_PI * 2)
