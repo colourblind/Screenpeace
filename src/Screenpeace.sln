@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShinyGloop", "ShinyGloop\Sh
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hypertext", "Hypertext\Hypertext.vcproj", "{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oculus", "Oculus\Oculus.vcproj", "{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -151,6 +153,18 @@ Global
 		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
 		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
 		{0AF19709-9C3A-41FF-913D-BFFB48FD34EE}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.Debug|Win32.Build.0 = Debug|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.Release|Win32.ActiveCfg = Release|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.Release|Win32.Build.0 = Release|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverDebug|Win32.ActiveCfg = ScreensaverDebug|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverDebug|Win32.Build.0 = ScreensaverDebug|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverDebugXP|Win32.ActiveCfg = ScreensaverDebugXP|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverDebugXP|Win32.Build.0 = ScreensaverDebugXP|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverRelease|Win32.ActiveCfg = ScreensaverRelease|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
+		{B9A7DC90-DDB2-46C3-BF38-23B612DA96BE}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
