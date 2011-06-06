@@ -3,5 +3,7 @@
 
 const int NUM_SEGMENTS = 100;
 const float MAX_ROTATION_SPEED = 0.001f;
+const float MIN_SEGMENT_LENGTH = 0.1f;
+const float MAX_SEGMENT_LENGTH = 2 * M_PI;
 
 #endif // OCULUS_CONSTANTS_H

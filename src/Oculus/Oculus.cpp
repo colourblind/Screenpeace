@@ -24,7 +24,7 @@ public:
         centre_(Vec3f(0, 0, 0)),
         radius_(Rand::randFloat(1, 10)),
         startAngle_(Rand::randFloat(0, M_PI * 2)),
-        angle_(Rand::randFloat(0.1f, M_PI * 2)),
+        angle_(Rand::randFloat(MIN_SEGMENT_LENGTH, MAX_SEGMENT_LENGTH)),
         startColour_(ColorA(Rand::randFloat(0, 0.5f), Rand::randFloat(0, 0.5f), 1), Rand::randFloat(0.5f, 1)),
         endColour_(ColorA(Rand::randFloat(0, 0.5f), Rand::randFloat(0, 0.5f), 1), Rand::randFloat(0.5f, 1)),
         rotation_(0),
