@@ -32,7 +32,7 @@ public:
         renderType_(Rand::randInt(2))
     {
         thickness_ = Rand::randFloat(0.1f, radius_ / 8);
-        slices_ = static_cast<int>(angle_ * 10);
+        slices_ = static_cast<int>(angle_ * CURVE_FIDELITY);
     }
     
     void SetRadius(float radius) { radius_ = radius; }
