@@ -29,7 +29,7 @@ public:
         endColour_(ColorA(Rand::randFloat(0, 0.5f), Rand::randFloat(0, 0.5f), 1), Rand::randFloat(0.5f, 1)),
         rotation_(0),
         rotationSpeed_(Rand::randFloat(-MAX_ROTATION_SPEED, MAX_ROTATION_SPEED)),
-        renderType_(Rand::randInt(2))
+        renderType_(Rand::randInt(4))
     {
         thickness_ = Rand::randFloat(0.1f, radius_ / 8);
         slices_ = static_cast<int>(angle_ * CURVE_FIDELITY);
@@ -113,7 +113,36 @@ void Segment::Render()
             colours.push_back(startColour_ + (endColour_ - startColour_) * i / slices_);
         }
     }
-    
+    else if (renderType_ == 2)
+    {
+        for (int i = 0; i < slices_; i ++)
+        {
+            float currentAngle = startAngle_ + angleStep * i;
+            verts.push_back(Vec3f(sin(currentAngle) * (radius_ - halfThick), cos(currentAngle) * (radius_ - halfThick), 0));
+            verts.push_back(Vec3f(sin(currentAngle) * (radius_ + halfThick), cos(currentAngle) * (radius_ + halfThick), 0));
+            verts.push_back(Vec3f(sin(currentAngle + angleStep) * (radius_ + halfThick), cos(currentAngle + angleStep) * (radius_ + halfThick), 0));
+            verts.push_back(Vec3f(sin(currentAngle + angleStep) * (radius_ - halfThick), cos(currentAngle + angleStep) * (radius_ - halfThick), 0));
+
+            colours.push_back(ColorA(1, 1, 1, 1));
+            colours.push_back(ColorA(1, 1, 1, 1));
+            colours.push_back(ColorA(1, 1, 1, 1));
+            colours.push_back(ColorA(1, 1, 1, 1));
+        }
+    }
+    else if (renderType_ == 3)
+    {
+        for (int i = 0; i < slices_; i ++)
+        {
+            float currentAngle = startAngle_ + angleStep * i;
+            verts.push_back(Vec3f(sin(currentAngle) * radius_, cos(currentAngle) * radius_, 0));
+
+            if (rotationSpeed_ > 0)
+                colours.push_back(ColorA(1, 1, 1, 1 - static_cast<float>(i) / slices_));
+            else
+                colours.push_back(ColorA(1, 1, 1, static_cast<float>(i) / slices_));
+        }
+    }
+
     glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, &verts[0].x);
@@ -122,7 +151,14 @@ void Segment::Render()
     gl::pushModelView();
     gl::rotate(Vec3f(0, 0, rotation_ * 180 / M_PI));
 
-    GLenum drawType = renderType_ == 0 ? GL_QUADS : GL_LINE_LOOP;
+    GLenum drawType = GL_QUADS;
+    if (renderType_ == 1)
+        drawType = GL_LINE_LOOP;
+    else if (renderType_ == 2)
+        drawType = GL_POINTS;
+    else if (renderType_ == 3)
+        drawType = GL_LINE_STRIP;
+
 	glDrawArrays(drawType, 0, verts.size());
 
     gl::popModelView();
