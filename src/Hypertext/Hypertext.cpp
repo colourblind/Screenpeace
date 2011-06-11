@@ -6,6 +6,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
 #include "cinder/Xml.h"
+#include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Vbo.h"
 #include "Constants.h"
@@ -90,6 +91,8 @@ vector<string> split(string s, char delim)
 class Hypertext : public APP_TYPE
 {
 public:
+    Hypertext() : initialised_(false) { }
+
     virtual void setup();
     virtual void draw();
     virtual void update();
@@ -105,9 +108,11 @@ private:
     float totalTravelTime_;
     float currentTravelTime_;
     Vec3f drift_;
-    bool exasperatedSigh_;
+    bool initialised_;
     Vec3f cameraStart_;
     Vec3f cameraEnd_;
+
+    gl::GlslProg dofSetup_;
 
     vector<gl::Texture> fontPages_;
     Glyph glyphs_[256];
@@ -115,7 +120,6 @@ private:
 
 void Hypertext::setup()
 {
-    exasperatedSigh_ = true;
     drift_ =  Vec3f(0, 0, 0);
 
     Rand::randomize();
@@ -126,6 +130,8 @@ void Hypertext::setup()
     currentTravelTime_ = 0;
 
     cameraStart_ = cameraEnd_ = (snippets_[nextSnippet_].position + snippets_[nextSnippet_].forward * -RANGE);
+
+    dofSetup_ = gl::GlslProg(loadResource(RES_DOF_VERT), loadResource(RES_DOF_FRAG));
 
     gl::Texture::Format format;
     format.enableMipmapping(true);
@@ -162,7 +168,7 @@ void Hypertext::setup()
     gl::enableAlphaBlending();
     gl::enableDepthRead();
     gl::enableDepthWrite();
-    gl::enableAlphaTest();
+    gl::enableAlphaTest(0.05); // dodge around depth issues
 }
 
 void Hypertext::update()
@@ -185,7 +191,7 @@ void Hypertext::update()
         {
             prevSnippet_ = nextSnippet_;
             totalTravelTime_ = PAUSE_TIME;
-            cameraEnd_ = (snippets_[nextSnippet_].position + snippets_[nextSnippet_].forward * -RANGE) + drift_ * 0.2f;
+            cameraEnd_ = (snippets_[nextSnippet_].position + snippets_[nextSnippet_].forward * -RANGE) + drift_ * 0.1f;
         }
         currentTravelTime_ = 0;
         cameraStart_ = camera_.getEyePoint();
@@ -194,13 +200,17 @@ void Hypertext::update()
 
 void Hypertext::draw()
 {
-    if (exasperatedSigh_)
+    if (!initialised_)
     {
         camera_ = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 10, 2000);
-        exasperatedSigh_ = false;
+        initialised_ = true;
     }
 
     gl::clear();
+
+    dofSetup_.bind();
+    dofSetup_.uniform("focalDistance", RANGE);
+    dofSetup_.uniform("focalRange", RANGE / 2);
 
     float lerp = currentTravelTime_ / totalTravelTime_;
 
