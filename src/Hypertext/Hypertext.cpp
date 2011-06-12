@@ -159,9 +159,14 @@ void Hypertext::setup()
     for (int i = 0; i < NUM_SNIPPETS; i ++)
     {
         snippets_[i] = Snippet(); // Need to re-init these now we've seeded rand correctly
-        int numLines = Rand::randInt(8);
-        int startLine = Rand::randInt(tokens.size() - numLines);
-        snippets_[i].text = join(tokens, startLine, numLines, "\n");
+        string text = " ";
+        while (text.find_first_not_of(" \t\r\n"))
+        {
+            int numLines = Rand::randInt(8);
+            int startLine = Rand::randInt(tokens.size() - numLines);
+            text = join(tokens, startLine, numLines, "\n");
+        }
+        snippets_[i].text = text;
         GenerateMesh(i);
     }
 
