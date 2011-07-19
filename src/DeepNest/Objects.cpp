@@ -13,13 +13,16 @@ Object::~Object()
 Object *ObjectFactory::CreateObject()
 {
     Object *result = NULL;
-    switch (Rand::randInt(3))
+    switch (Rand::randInt(5))
     {
         case 0:
             result = new Transform();
             break;
         case 1:
             result = new Animate();
+            break;
+        case 2:
+            result = new Spawner();
             break;
         default:
             result = new Draw();
@@ -50,6 +53,18 @@ bool Animate::Update(float msecs)
     translate_ += dTranslate_ * msecs;
 
     return Transform::Update(msecs);
+}
+
+bool Spawner::Update(float msecs)
+{
+    spawnCountDown_ -= msecs;
+    if (spawnCountDown_ < 0)
+    {
+        children_.push_back(ObjectFactory::CreateObject());
+        spawnCountDown_ += spawnTime_;
+    }
+
+    return Object::Update(msecs);
 }
 
 bool Draw::Update(float msecs)

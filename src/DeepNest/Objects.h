@@ -42,13 +42,24 @@ public:
     virtual bool Update(float msecs);
 };
 
+class Spawner : public Object
+{
+public:
+    Spawner() : spawnTime_(cinder::Rand::randFloat(250, 2000)), spawnCountDown_(0) { }
+    virtual bool Update(float msecs);
+
+protected:
+    float spawnCountDown_;
+    float spawnTime_;
+};
+
 class Transform : public Object
 {
 public:
     Transform() : 
         scale_(cinder::Rand::randFloat(0.5, 2), cinder::Rand::randFloat(0.5, 2), cinder::Rand::randFloat(0.5, 2)), 
         translate_(cinder::Rand::randFloat(-4, 4), cinder::Rand::randFloat(-4, 4), cinder::Rand::randFloat(-4, 4)),
-        rotate_(cinder::Rand::randFloat(0, 2 * M_PI), cinder::Rand::randFloat(0, 2 * M_PI), cinder::Rand::randFloat(0, 2 * M_PI))
+        rotate_(0, cinder::Rand::randFloat(0, 2 * M_PI), 0)
     { 
         for (int i = 0; i < cinder::Rand::randInt(5, 10); i ++)
             children_.push_back(new Draw());        
@@ -68,7 +79,7 @@ public:
     Animate()  : 
         dScale_(cinder::Rand::randFloat(-0.001f, 0.001f), cinder::Rand::randFloat(-0.001f, 0.001f), cinder::Rand::randFloat(-0.001f, 0.001f)), 
         dTranslate_(cinder::Rand::randFloat(-0.0001f, 0.0001f), cinder::Rand::randFloat(-0.0001f, 0.0001f), cinder::Rand::randFloat(-0.0001f, 0.0001f)),
-        dRotate_(cinder::Rand::randFloat(-0.0001f, 0.0001f), cinder::Rand::randFloat(-0.0001f, 0.0001f), cinder::Rand::randFloat(-0.0001f, 0.0001f))
+        dRotate_(0, cinder::Rand::randFloat(-0.0001f, 0.0001f), 0)
     { }
     virtual bool Update(float msecs);
 
