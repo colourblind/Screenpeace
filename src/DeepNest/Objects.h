@@ -61,7 +61,7 @@ public:
         translate_(cinder::Rand::randFloat(-4, 4), cinder::Rand::randFloat(-4, 4), cinder::Rand::randFloat(-4, 4)),
         rotate_(0, cinder::Rand::randFloat(0, 2 * M_PI), 0)
     { 
-        for (int i = 0; i < cinder::Rand::randInt(5, 10); i ++)
+        for (int i = 0; i < cinder::Rand::randInt(10, 20); i ++)
             children_.push_back(new Draw());        
     }
     

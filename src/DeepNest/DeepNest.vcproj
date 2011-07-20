@@ -514,6 +514,18 @@
 				RelativePath=".\Objects.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Resources.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			>
+			<File
+				RelativePath=".\Resources.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

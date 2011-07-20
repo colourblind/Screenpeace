@@ -3,8 +3,10 @@
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
+#include "cinder/gl/GlslProg.h"
 #include "Constants.h"
 #include "Objects.h"
+#include "Resources.h"
 
 #include <vector>
 
@@ -29,6 +31,7 @@ public:
 private:
     Timer timer_;
     vector<Object *> objects_;
+    gl::GlslProg program_;
 };
 
 DeepNest::~DeepNest()
@@ -41,12 +44,15 @@ void DeepNest::setup()
 {
     Rand::randomize();
 
-    for (int i = 0; i < Rand::randInt(5, 10); i ++)
+    for (int i = 0; i < Rand::randInt(10, 20); i ++)
         objects_.push_back(ObjectFactory::CreateObject());
 
+    program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
+
     gl::enableAlphaBlending();
-    gl::disableDepthRead();
-    gl::disableDepthWrite();
+    gl::enableDepthRead();
+    gl::enableDepthWrite();
+    gl::enable(GL_CULL_FACE);
 }
 
 void DeepNest::draw()
@@ -56,11 +62,19 @@ void DeepNest::draw()
     timer_.start();
 
     gl::clear();
-    gl::color(Color(1, 1, 1));
 
     CameraPersp cam = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 0.1, 100);
     cam.lookAt(Vec3f(0, 0, 30), Vec3f(0, 0, 0), Vec3f(0, 1, 0));
     gl::setMatrices(cam);
+
+    program_.unbind();
+    gl::color(Color(1, 1, 0));
+    gl::drawCube(Vec3f(0, 0, 0), Vec3f(2, 2, 2));
+
+    program_.bind();
+    program_.uniform("cameraPos", cam.getEyePoint());
+    program_.uniform("lightPos", Vec3f(0, 0, 0));
+    program_.uniform("colour", Vec3f(1, 1, 1));
 
     for (vector<Object *>::iterator iter = objects_.begin(); iter != objects_.end(); iter ++)
         (*iter)->Update(msecs);

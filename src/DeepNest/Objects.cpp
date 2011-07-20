@@ -69,6 +69,6 @@ bool Spawner::Update(float msecs)
 
 bool Draw::Update(float msecs)
 {
-    gl::drawSolidRect(Rectf(-0.5f, -0.5f, 0.5f, 0.5f));
+    gl::drawCube(Vec3f(0, 0, 0), Vec3f(1, 1, 0.01f));
     return Object::Update(msecs);
 }
