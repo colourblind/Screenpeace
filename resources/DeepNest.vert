@@ -7,8 +7,7 @@ varying vec3 pos;
 
 void main()
 {
-    normal = normalize(gl_NormalMatrix * gl_Normal).xyz;
-	pos = (gl_ModelViewMatrix * gl_Vertex).xyz + cameraPos;
-    
 	gl_Position = ftransform();
+    normal = normalize(gl_NormalMatrix * gl_Normal).xyz;
+	pos = (gl_ModelViewMatrix * gl_Vertex).xyz + cameraPos;    
 }

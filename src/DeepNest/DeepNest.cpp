@@ -45,7 +45,7 @@ void DeepNest::setup()
     Rand::randomize();
 
     for (int i = 0; i < Rand::randInt(10, 20); i ++)
-        objects_.push_back(ObjectFactory::CreateObject());
+        objects_.push_back(ObjectFactory::CreateObject(0));
 
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
 
@@ -77,7 +77,13 @@ void DeepNest::draw()
     program_.uniform("colour", Vec3f(1, 1, 1));
 
     for (vector<Object *>::iterator iter = objects_.begin(); iter != objects_.end(); iter ++)
-        (*iter)->Update(msecs);
+    {
+        if ((*iter)->Update(msecs))
+        {
+            delete *iter;
+            *iter = ObjectFactory::CreateObject(0);
+        }
+    }
 }
 
 #ifdef SCREENSAVER

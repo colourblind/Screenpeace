@@ -1,4 +1,5 @@
 #include "Objects.h"
+#include "Constants.h"
 #include "cinder/gl/gl.h"
 
 using namespace cinder;
@@ -10,24 +11,29 @@ Object::~Object()
         delete *iter;
 }
 
-Object *ObjectFactory::CreateObject()
+Object *ObjectFactory::CreateObject(int depth)
 {
     Object *result = NULL;
-    switch (Rand::randInt(5))
+    if (depth < MAX_DEPTH - 1)
     {
-        case 0:
-            result = new Transform();
-            break;
-        case 1:
-            result = new Animate();
-            break;
-        case 2:
-            result = new Spawner();
-            break;
-        default:
-            result = new Draw();
-            break;
+        switch (Rand::randInt(5))
+        {
+            case 0:
+                result = new Transform(depth);
+                break;
+            case 1:
+                result = new Animate(depth);
+                break;
+            case 2:
+                result = new Spawner(depth);
+                break;
+            default:
+                result = new Draw();
+                break;
+        }
     }
+    else
+        result = new Draw();
     return result;
 }
 
@@ -36,7 +42,7 @@ bool Transform::Update(float msecs)
     gl::pushModelView();
 
     gl::rotate(rotate_);
-    gl::scale(scale_);
+    //gl::scale(scale_);
     gl::translate(translate_);
 
     Object::Update(msecs);
@@ -60,7 +66,7 @@ bool Spawner::Update(float msecs)
     spawnCountDown_ -= msecs;
     if (spawnCountDown_ < 0)
     {
-        children_.push_back(ObjectFactory::CreateObject());
+        children_.push_back(new Draw());
         spawnCountDown_ += spawnTime_;
     }
 

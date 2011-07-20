@@ -8,7 +8,7 @@
 class Object
 {
 public:
-    Object() : life_(cinder::Rand::randFloat(1000, 10000)) { }
+    Object() : life_(cinder::Rand::randFloat(5000, 20000)) { }
     virtual ~Object();
     virtual bool Update(float msecs)
     {
@@ -33,7 +33,7 @@ protected:
 class ObjectFactory
 {
 public:
-    static Object *CreateObject();
+    static Object *CreateObject(int depth);
 };
 
 class Draw : public Object
@@ -45,7 +45,7 @@ public:
 class Spawner : public Object
 {
 public:
-    Spawner() : spawnTime_(cinder::Rand::randFloat(250, 2000)), spawnCountDown_(0) { }
+    Spawner(int depth) : spawnTime_(cinder::Rand::randFloat(500, 2000)), spawnCountDown_(0) { }
     virtual bool Update(float msecs);
 
 protected:
@@ -56,13 +56,13 @@ protected:
 class Transform : public Object
 {
 public:
-    Transform() : 
-        scale_(cinder::Rand::randFloat(0.5, 2), cinder::Rand::randFloat(0.5, 2), cinder::Rand::randFloat(0.5, 2)), 
-        translate_(cinder::Rand::randFloat(-4, 4), cinder::Rand::randFloat(-4, 4), cinder::Rand::randFloat(-4, 4)),
+    Transform(int depth) : 
+        scale_(cinder::Rand::randFloat(0.75, 1.5), cinder::Rand::randFloat(0.75, 1.5), cinder::Rand::randFloat(0.75, 1.5)), 
+        translate_(cinder::Rand::randFloat(-6, 6), cinder::Rand::randFloat(-6, 6), cinder::Rand::randFloat(-6, 6)),
         rotate_(0, cinder::Rand::randFloat(0, 2 * M_PI), 0)
     { 
         for (int i = 0; i < cinder::Rand::randInt(10, 20); i ++)
-            children_.push_back(new Draw());        
+            children_.push_back(ObjectFactory::CreateObject(depth + 1));        
     }
     
     virtual bool Update(float msecs);
@@ -76,7 +76,8 @@ protected:
 class Animate : public Transform
 {
 public:
-    Animate()  : 
+    Animate(int depth)  : 
+        Transform(depth),
         dScale_(cinder::Rand::randFloat(-0.001f, 0.001f), cinder::Rand::randFloat(-0.001f, 0.001f), cinder::Rand::randFloat(-0.001f, 0.001f)), 
         dTranslate_(cinder::Rand::randFloat(-0.0001f, 0.0001f), cinder::Rand::randFloat(-0.0001f, 0.0001f), cinder::Rand::randFloat(-0.0001f, 0.0001f)),
         dRotate_(0, cinder::Rand::randFloat(-0.0001f, 0.0001f), 0)
