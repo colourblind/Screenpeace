@@ -66,6 +66,7 @@ private:
     Timer timer_;
     vector<Tri *> objects_;
     gl::GlslProg program_;
+    float cameraAngle_;
 };
 
 void Tri::Update(float msecs)
@@ -142,6 +143,7 @@ void TreesOfTris::setup()
     objects_.push_back(new Tri(0));
     
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
+    cameraAngle_ = 0;
 
     gl::enableDepthRead();
     gl::enableDepthWrite();
@@ -155,6 +157,13 @@ void TreesOfTris::update()
 
     for (vector<Tri *>::iterator iter = objects_.begin(); iter != objects_.end(); iter ++)
         (*iter)->Update(msecs);
+
+    if (ANIMATE_CAMERA)
+    {
+        cameraAngle_ += CAMERA_SPEED * msecs;
+        if (cameraAngle_ > M_PI * 2)
+            cameraAngle_ -= M_PI * 2;
+    }
 }
 
 void TreesOfTris::draw()
@@ -162,12 +171,12 @@ void TreesOfTris::draw()
     gl::clear();
 
     CameraPersp cam = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 0.1, 100);
-    cam.lookAt(Vec3f(0, 0, 30), Vec3f(0, 0, 0), Vec3f(0, 1, 0));
+    cam.lookAt(Vec3f(sin(cameraAngle_) * CAMERA_RANGE, 0, cos(cameraAngle_) * CAMERA_RANGE), Vec3f(0, 0, 0), Vec3f(0, 1, 0));
     gl::setMatrices(cam);
 
     program_.bind();
     program_.uniform("cameraPos", cam.getEyePoint());
-    program_.uniform("lightPos", Vec3f(2, 2, 3));
+    program_.uniform("lightPos", Vec3f(20, 20, 30));
 
     for (vector<Tri *>::iterator iter = objects_.begin(); iter != objects_.end(); iter ++)
         (*iter)->Draw();
