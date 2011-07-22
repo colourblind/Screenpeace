@@ -100,6 +100,7 @@ void Tri::Draw()
         gl::pushModelView();
         gl::translate(Vec3f(-0.25f, math<float>::sin(M_PI / 3) * 0.5f, 0));
         gl::rotate(Vec3f(0, 0, 60));
+        gl::translate(Vec3f(0, PADDING, 0));
         left_->Draw();
         gl::popModelView();
     }
@@ -109,6 +110,7 @@ void Tri::Draw()
         gl::pushModelView();
         gl::translate(Vec3f(0.25f, math<float>::sin(M_PI / 3) * 0.5f, 0));
         gl::rotate(Vec3f(0, 0, -60));
+        gl::translate(Vec3f(0, PADDING, 0));
         right_->Draw();
         gl::popModelView();
     }

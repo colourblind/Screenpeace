@@ -1,6 +1,6 @@
 #ifndef TREESOFTRIS_CONSTANTS_H
 #define TREESOFTRIS_CONSTANTS_H
 
-const int MAX_DEPTH = 4;
+const float PADDING = 0.25f;
 
 #endif // TREESOFTRIS_CONSTANTS_H
