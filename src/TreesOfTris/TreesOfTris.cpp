@@ -22,7 +22,11 @@ using namespace cinder::app;
 class Tri
 {
 public:
-    Tri() : left_(NULL), right_(NULL), timeToLeftSpawn_(Rand::randFloat(500, 3000)), timeToRightSpawn_(Rand::randFloat(500, 3000))
+    Tri(int level) : level_(level), left_(NULL), right_(NULL), 
+        timeToLeftSpawn_(Rand::randFloat(-500 * level_, 2000)), 
+        timeToRightSpawn_(Rand::randFloat(-500 * level_, 2000)),
+        angle_(-179),
+        targetAngle_(Rand::randFloat(-30, 30))
     { 
         int colour = Rand::randInt(1, 8);
         float r = colour & 0x1 ? 1 : 0.75f;
@@ -36,10 +40,13 @@ public:
     void Draw();
 
 private:
+    int level_;
     Tri *left_;
     Tri *right_;
     float timeToLeftSpawn_;
     float timeToRightSpawn_;
+    float targetAngle_;
+    float angle_;
     Color colour_;
 };
 
@@ -63,18 +70,23 @@ private:
 
 void Tri::Update(float msecs)
 {
-    if (timeToLeftSpawn_ > 0)
+    if (angle_ < targetAngle_)
+        angle_ += SPAWN_SPEED * msecs;
+    else
     {
-        timeToLeftSpawn_ -= msecs;
-        if (timeToLeftSpawn_ <= 0)
-            left_ = new Tri();
-    }
-    
-    if (timeToRightSpawn_ > 0)
-    {
-        timeToRightSpawn_ -= msecs;
-        if (timeToRightSpawn_ <= 0)
-            right_ = new Tri();
+        if (timeToLeftSpawn_ > 0)
+        {
+            timeToLeftSpawn_ -= msecs;
+            if (timeToLeftSpawn_ <= 0)
+                left_ = new Tri(level_ + 1);
+        }
+        
+        if (timeToRightSpawn_ > 0)
+        {
+            timeToRightSpawn_ -= msecs;
+            if (timeToRightSpawn_ <= 0)
+                right_ = new Tri(level_ + 1);
+        }
     }
 
     if (left_)
@@ -86,6 +98,9 @@ void Tri::Update(float msecs)
 void Tri::Draw()
 {
     gl::color(colour_);
+
+    gl::rotate(Vec3f(angle_, 0, 0));
+    gl::translate(Vec3f(0, PADDING, 0));
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -100,7 +115,6 @@ void Tri::Draw()
         gl::pushModelView();
         gl::translate(Vec3f(-0.25f, math<float>::sin(M_PI / 3) * 0.5f, 0));
         gl::rotate(Vec3f(0, 0, 60));
-        gl::translate(Vec3f(0, PADDING, 0));
         left_->Draw();
         gl::popModelView();
     }
@@ -110,7 +124,6 @@ void Tri::Draw()
         gl::pushModelView();
         gl::translate(Vec3f(0.25f, math<float>::sin(M_PI / 3) * 0.5f, 0));
         gl::rotate(Vec3f(0, 0, -60));
-        gl::translate(Vec3f(0, PADDING, 0));
         right_->Draw();
         gl::popModelView();
     }
@@ -126,7 +139,7 @@ void TreesOfTris::setup()
 {
     Rand::randomize();
 
-    objects_.push_back(new Tri());
+    objects_.push_back(new Tri(0));
     
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
 

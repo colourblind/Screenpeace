@@ -2,5 +2,6 @@
 #define TREESOFTRIS_CONSTANTS_H
 
 const float PADDING = 0.25f;
+const float SPAWN_SPEED = 0.1f;
 
 #endif // TREESOFTRIS_CONSTANTS_H
