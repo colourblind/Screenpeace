@@ -36,7 +36,7 @@ public:
     }
     ~Tri() { delete left_; delete right_; }
     
-    void Update(float msecs);
+    bool Update(float msecs);
     void Draw();
 
 private:
@@ -69,14 +69,20 @@ private:
     float cameraAngle_;
 };
 
-void Tri::Update(float msecs)
+bool Tri::Update(float msecs)
 {
+    bool stagnant = true;
+
     if (angle_ < targetAngle_)
+    {
+        stagnant = false;
         angle_ += SPAWN_SPEED * msecs;
+    }
     else
     {
         if (timeToLeftSpawn_ > 0)
         {
+            stagnant = false;
             timeToLeftSpawn_ -= msecs;
             if (timeToLeftSpawn_ <= 0)
                 left_ = new Tri(level_ + 1);
@@ -84,6 +90,7 @@ void Tri::Update(float msecs)
         
         if (timeToRightSpawn_ > 0)
         {
+            stagnant = false;
             timeToRightSpawn_ -= msecs;
             if (timeToRightSpawn_ <= 0)
                 right_ = new Tri(level_ + 1);
@@ -91,9 +98,11 @@ void Tri::Update(float msecs)
     }
 
     if (left_)
-        left_->Update(msecs);
+        stagnant = left_->Update(msecs) && stagnant;
     if (right_)
-        right_->Update(msecs);
+        stagnant = right_->Update(msecs) && stagnant;
+
+    return stagnant;
 }
 
 void Tri::Draw()
@@ -157,7 +166,13 @@ void TreesOfTris::update()
     timer_.start();
 
     for (vector<Tri *>::iterator iter = objects_.begin(); iter != objects_.end(); iter ++)
-        (*iter)->Update(msecs);
+    {
+        if ((*iter)->Update(msecs))
+        {
+            delete *iter;
+            *iter = new Tri(0);
+        }
+    }
 
     if (ANIMATE_CAMERA)
     {
