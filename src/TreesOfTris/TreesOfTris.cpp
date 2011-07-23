@@ -100,8 +100,9 @@ void Tri::Draw()
 {
     gl::color(colour_);
 
+    gl::translate(Vec3f(0, PADDING / 2, 0));
     gl::rotate(Vec3f(angle_, 0, 0));
-    gl::translate(Vec3f(0, PADDING, 0));
+    gl::translate(Vec3f(0, PADDING / 2, 0));
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
