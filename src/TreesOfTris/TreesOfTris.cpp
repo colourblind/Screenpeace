@@ -33,6 +33,8 @@ public:
         float g = colour & 0x2 ? 1 : 0.75f;
         float b = colour & 0x4 ? 1 : 0.75f;
         colour_ = Color(r, g, b);
+        if (level == 0)
+            angle_ = targetAngle_;
     }
     ~Tri() { delete left_; delete right_; }
     
