@@ -63,8 +63,11 @@ public:
     virtual void draw();
     
 private:
+    void CreateTree(int index);
+
     Timer timer_;
     vector<Tri *> objects_;
+    vector<Vec3f> translations_;
     gl::GlslProg program_;
     float cameraAngle_;
 };
@@ -150,7 +153,8 @@ void TreesOfTris::setup()
 {
     Rand::randomize();
 
-    objects_.push_back(new Tri(0));
+    for (int i = 0; i < NUM_TREES; i ++)
+        CreateTree(-1);
     
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
     cameraAngle_ = 0;
@@ -165,13 +169,10 @@ void TreesOfTris::update()
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
 
-    for (vector<Tri *>::iterator iter = objects_.begin(); iter != objects_.end(); iter ++)
+    for (int i = 0; i < objects_.size(); i ++)
     {
-        if ((*iter)->Update(msecs))
-        {
-            delete *iter;
-            *iter = new Tri(0);
-        }
+        if (objects_[i]->Update(msecs))
+            CreateTree(i);
     }
 
     if (ANIMATE_CAMERA)
@@ -194,8 +195,31 @@ void TreesOfTris::draw()
     program_.uniform("cameraPos", cam.getEyePoint());
     program_.uniform("lightPos", Vec3f(20, 20, 30));
 
-    for (vector<Tri *>::iterator iter = objects_.begin(); iter != objects_.end(); iter ++)
-        (*iter)->Draw();
+    for (int i = 0; i < objects_.size(); i ++)
+    {
+        gl::pushModelView();
+        gl::translate(translations_[i]);
+        objects_[i]->Draw();
+        gl::popModelView();
+    }
+}
+
+void TreesOfTris::CreateTree(int index)
+{
+    Tri *t = new Tri(0);
+    Vec3f translate = Vec3f(Rand::randFloat(-8, 8), Rand::randFloat(-8, 8), Rand::randFloat(-8, 8));
+
+    if (index < 0)
+    {
+        objects_.push_back(t);
+        translations_.push_back(translate);
+    }
+    else
+    {
+        delete objects_[index];
+        objects_[index] = t;
+        translations_[index] = translate;
+    }
 }
 
 #ifdef SCREENSAVER
