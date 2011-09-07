@@ -224,7 +224,8 @@ void TreesOfTris::draw()
 void TreesOfTris::CreateTree(int index)
 {
     Tri *t = new Tri(0);
-    Vec3f translate = Vec3f(Rand::randFloat(-8, 8), Rand::randFloat(-8, 8), Rand::randFloat(-8, 8));
+    float aspectRatio = 1.6f; // getWindowAspectRatio();
+    Vec3f translate = Vec3f(Rand::randFloat(-8, 8) * aspectRatio, Rand::randFloat(-8, 8), Rand::randFloat(-8, 8) * aspectRatio);
 
     if (index < 0)
     {
