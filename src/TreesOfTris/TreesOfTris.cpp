@@ -78,7 +78,12 @@ bool Tri::Update(float msecs)
 {
     bool stagnant = true;
 
-    if (angle_ < targetAngle_)
+    if (targetAngle_ > 100 && angle_ < targetAngle_) // collapsing
+    {
+        stagnant = false;
+        angle_ += SPAWN_SPEED * msecs;
+    }
+    else if (angle_ < targetAngle_) // expanding
     {
         stagnant = false;
         angle_ += SPAWN_SPEED * msecs;
@@ -107,6 +112,13 @@ bool Tri::Update(float msecs)
     if (right_)
         stagnant = right_->Update(msecs) && stagnant;
 
+    // start the collapse
+    if (stagnant && targetAngle_ < 100)
+    {
+        targetAngle_ = 179;
+        stagnant = false;
+    }
+
     return stagnant;
 }
 
@@ -118,13 +130,16 @@ void Tri::Draw()
     gl::rotate(Vec3f(angle_, 0, 0));
     gl::translate(Vec3f(0, PADDING / 2, 0));
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, verts);
-    glNormalPointer(GL_FLOAT, 0, normals);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+    if (angle_ < 179)
+    {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glVertexPointer(2, GL_FLOAT, 0, verts);
+        glNormalPointer(GL_FLOAT, 0, normals);
+	    glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDisableClientState(GL_NORMAL_ARRAY);
+	    glDisableClientState(GL_VERTEX_ARRAY);
+    }
 
     if (left_)
     {
