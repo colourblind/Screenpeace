@@ -72,6 +72,7 @@ private:
     vector<Vec3f> translations_;
     gl::GlslProg program_;
     float cameraAngle_;
+    bool initialised_;
 };
 
 bool Tri::Update(float msecs)
@@ -170,9 +171,8 @@ void TreesOfTris::setup()
 {
     Rand::randomize();
 
-    for (int i = 0; i < NUM_TREES; i ++)
-        CreateTree(-1);
-    
+    initialised_ = false;
+
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
     cameraAngle_ = 0;
 
@@ -182,6 +182,13 @@ void TreesOfTris::setup()
 
 void TreesOfTris::update()
 {
+    if (!initialised_)
+    {
+        for (int i = 0; i < NUM_TREES; i ++)
+            CreateTree(-1);
+        initialised_ = true;
+    }
+
     timer_.stop();
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
@@ -224,7 +231,7 @@ void TreesOfTris::draw()
 void TreesOfTris::CreateTree(int index)
 {
     Tri *t = new Tri(0);
-    float aspectRatio = 1.6f; // getWindowAspectRatio();
+    float aspectRatio = getWindowAspectRatio();
     Vec3f translate = Vec3f(Rand::randFloat(-8, 8) * aspectRatio, Rand::randFloat(-8, 8), Rand::randFloat(-8, 8) * aspectRatio);
 
     if (index < 0)
