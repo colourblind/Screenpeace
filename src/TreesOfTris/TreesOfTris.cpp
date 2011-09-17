@@ -29,9 +29,9 @@ public:
         targetAngle_(Rand::randFloat(-30, 30))
     { 
         int colour = Rand::randInt(1, 8);
-        float r = colour & 0x1 ? 1 : 0.75f;
-        float g = colour & 0x2 ? 1 : 0.75f;
-        float b = colour & 0x4 ? 1 : 0.75f;
+        float r = (colour & 0x1 ? 1 : 0.75f) * TINT[0];
+        float g = (colour & 0x2 ? 1 : 0.75f) * TINT[1];
+        float b = (colour & 0x4 ? 1 : 0.75f) * TINT[2];
         colour_ = Color(r, g, b);
         if (level == 0)
             angle_ = targetAngle_;
