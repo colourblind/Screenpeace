@@ -1,4 +1,0 @@
-#include "Resources.h"
-
-RES_VERT_PROGRAM
-RES_FRAG_PROGRAM
