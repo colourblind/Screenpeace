@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oculus", "Oculus\Oculus.vcp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TreesOfTris", "TreesOfTris\TreesOfTris.vcproj", "{8207513C-7FFC-40AC-AF5B-5F10CC712573}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VeryAttractive", "VeryAttractive\VeryAttractive.vcproj", "{08221542-1777-494F-990C-A0D9E3BCEB4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -179,6 +181,18 @@ Global
 		{8207513C-7FFC-40AC-AF5B-5F10CC712573}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
 		{8207513C-7FFC-40AC-AF5B-5F10CC712573}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
 		{8207513C-7FFC-40AC-AF5B-5F10CC712573}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.Debug|Win32.Build.0 = Debug|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.Release|Win32.ActiveCfg = Release|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.Release|Win32.Build.0 = Release|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverDebug|Win32.ActiveCfg = ScreensaverDebug|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverDebug|Win32.Build.0 = ScreensaverDebug|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverDebugXP|Win32.ActiveCfg = ScreensaverDebugXP|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverDebugXP|Win32.Build.0 = ScreensaverDebugXP|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverRelease|Win32.ActiveCfg = ScreensaverRelease|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverRelease|Win32.Build.0 = ScreensaverRelease|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverReleaseXP|Win32.ActiveCfg = ScreensaverReleaseXP|Win32
+		{08221542-1777-494F-990C-A0D9E3BCEB4F}.ScreensaverReleaseXP|Win32.Build.0 = ScreensaverReleaseXP|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
