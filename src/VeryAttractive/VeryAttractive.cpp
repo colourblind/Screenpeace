@@ -6,6 +6,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Vbo.h"
 #include "Constants.h"
 #include "Resources.h"
 
@@ -42,8 +43,8 @@ public:
 private:
     void DrawBillboard(Vec3f objectPos, Vec2f scale, Camera *camera);
 
-    vector<Vec3f> points_;
     gl::Texture particleTexture_;
+    gl::VboMesh points_;
     float cameraRange_;
     float cameraAngle_;
 };
@@ -68,40 +69,44 @@ void Pickover::setup()
     float c = -0.65f;
     float d = -2.43f;
     float e = 1;
-
-   // float a = 2.0f;
-  	//float b = 0.5f;
-  	//float c = -1.0f;
-  	//float d = -1.0f;
-  	//float e = 2.0f;
     
     // Check to see if they are likely to be chaotic
     // TODO
-    
+
+    vector<uint32_t> indices;
+    vector<Vec3f> p;
+
     Vec3f prevPoint;
-    points_.push_back(prevPoint);
-    for (int i = 0; i < ITERATIONS; i ++)
+    p.push_back(prevPoint);
+    indices.push_back(0);
+    for (unsigned int i = 1; i < ITERATIONS; i ++)
     {
         // Generate new point's position
         Vec3f newPoint;
-        //newPoint.x = sin(a * prevPoint.x) - prevPoint.z * cos(b * prevPoint.y);
-        //newPoint.y = prevPoint.z * sin(c * prevPoint.x) - cos(d * prevPoint.y);
-        //newPoint.z = e / sin(prevPoint.x);
 
         newPoint.x = sin(a * prevPoint.y) - prevPoint.z * cos(b * prevPoint.x);
         newPoint.y = prevPoint.z * sin(c * prevPoint.x) - cos(d * prevPoint.y);
         newPoint.z = e * sin(prevPoint.x);
         
         // Apply some noise to break it up a little
-        newPoint += perlin.dfBm(newPoint * 0.01f) * 0.0025f;
+        newPoint += perlin.dfBm(newPoint) * 0.25f;
         
         // Keep track of the maximum range for when we set the camera up
         cameraRange_ = max(cameraRange_, newPoint.lengthSquared());
 
-        points_.push_back(newPoint);
+        p.push_back(newPoint);
+        indices.push_back(i);
         prevPoint = newPoint;
     }
     
+    gl::VboMesh::Layout layout;
+	layout.setStaticIndices();
+	layout.setStaticPositions();
+
+    points_ = gl::VboMesh(ITERATIONS, ITERATIONS, layout, GL_POINTS);
+    points_.bufferIndices(indices);
+    points_.bufferPositions(p);
+
     cameraRange_ = ::sqrt(cameraRange_) * 2;
 }
 
@@ -124,77 +129,10 @@ void Pickover::draw()
     gl::setMatrices(camera);
     gl::enableAdditiveBlending();
 
-    particleTexture_.enableAndBind();
+    //particleTexture_.enableAndBind();
     gl::color(ColorA(0.1f, 0.1f, 0.1f, 1));
-    for (vector<Vec3f>::iterator iter = points_.begin(); iter != points_.end(); iter ++)
-    {
-//        gl::drawCube(*iter, Vec3f(0.01f, 0.01f, 0.01f));
-//        gl::drawBillboard(*iter, Vec2f(0.2f, 0.2f), 0, Vec3f(1, 0, 0), Vec3f(0, 1, 0));
-        DrawBillboard(*iter, Vec2f(0.2f, 0.2f), &camera);
-    }
-}
-
-void Pickover::DrawBillboard(Vec3f objectPos, Vec2f scale, Camera *camera)
-{
-    // Yoinked from the SlimDX implementation (thanks Promit and friends!)
-    Matrix44f result;
-    Vec3f difference = objectPos - camera->getEyePoint();
-    Vec3f crossed;
-    Vec3f final;
-
-    float lengthSq = difference.lengthSquared();
-    if (lengthSq < 0.0001f)
-        difference = camera->getViewDirection();
-    else
-        difference *= static_cast<float>(1.0f / math<float>::sqrt(lengthSq));
-
-    crossed = camera->getWorldUp().cross(difference);
-    crossed.normalize();
-    final = difference.cross(crossed);
-
-    result.m[0] = crossed.x;
-    result.m[1] = crossed.y;
-    result.m[2] = crossed.z;
-    result.m[3] = 0;
-
-    result.m[4] = final.x;
-    result.m[5] = final.y;
-    result.m[6] = final.z;
-    result.m[7] = 0;
-    
-    result.m[8] = difference.x;
-    result.m[9] = difference.y;
-    result.m[10] = difference.z;
-    result.m[11] = 0;
-
-    result.m[12] = objectPos.x;
-    result.m[13] = objectPos.y;
-    result.m[14] = objectPos.z;
-    result.m[15] = 1;
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    Vec3f verts[4];
-    glVertexPointer(3, GL_FLOAT, 0, &verts[0].x);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    GLfloat texCoords[8] = { 0, 0, 0, 1, 1, 0, 1, 1 };
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
-
-    gl::pushModelView();
-    gl::multModelView(result);
-
-    Vec2f halfScale = scale * 0.5;
-
-    verts[0] = Vec3f(-halfScale.x, -halfScale.y, 0);
-    verts[1] = Vec3f(-halfScale.x, halfScale.y, 0);
-    verts[2] = Vec3f(halfScale.x, -halfScale.y, 0);
-    verts[3] = Vec3f(halfScale.x, halfScale.y, 0);
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    gl::popModelView();
+    gl::enable(GL_POINT_SPRITE);
+    gl::drawArrays(points_, 0, ITERATIONS);    
 }
 
 #ifdef SCREENSAVER
