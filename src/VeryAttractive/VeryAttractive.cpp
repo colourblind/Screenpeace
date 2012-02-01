@@ -74,12 +74,10 @@ void Pickover::setup()
     // Check to see if they are likely to be chaotic
     // TODO
 
-    vector<uint32_t> indices;
     vector<Vec3f> p;
 
     Vec3f prevPoint;
     p.push_back(prevPoint);
-    indices.push_back(0);
     for (unsigned int i = 1; i < ITERATIONS; i ++)
     {
         // Generate new point's position
@@ -89,21 +87,22 @@ void Pickover::setup()
         newPoint.y = prevPoint.z * sin(c * prevPoint.x) - cos(d * prevPoint.y);
         newPoint.z = e * sin(prevPoint.x);
         
+        //newPoint.x = sin(a * prevPoint.x) - prevPoint.z * cos(b * prevPoint.y);
+        //newPoint.y = prevPoint.z * sin(c * prevPoint.x) - cos(d * prevPoint.y);
+        //newPoint.z = e / sin(prevPoint.x);
+
         // Keep track of the maximum range for when we set the camera up
         cameraRange_ = max(cameraRange_, newPoint.lengthSquared());
 
         // Apply some noise to break it up a little
         p.push_back(newPoint + perlin.dfBm(newPoint) * CHAOS);
-        indices.push_back(i);
         prevPoint = newPoint;
     }
     
     gl::VboMesh::Layout layout;
-	layout.setStaticIndices();
 	layout.setStaticPositions();
 
     points_ = gl::VboMesh(ITERATIONS, ITERATIONS, layout, GL_POINTS);
-    points_.bufferIndices(indices);
     points_.bufferPositions(p);
 
     cameraRange_ = ::sqrt(cameraRange_) * 2;
