@@ -22,6 +22,8 @@ using namespace cinder::app;
     #define APP_TYPE    AppBasic
 #endif
 
+// TODO: Update libcinder so I can add colour buffers to VboMesh
+
 // According to: http://www.bentamari.com/attractors.html
 // x' =  sin (ax) - z cos( by) dt
 // y' = z sin (cx) - cos (dy) dt
@@ -129,8 +131,9 @@ void Pickover::draw()
     gl::clear();
     gl::setMatrices(camera);
     gl::enableAdditiveBlending();
+    particleTexture_.enableAndBind();
+    glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 
-    //particleTexture_.enableAndBind();
     gl::color(ColorA(0.1f, 0.1f, 0.1f, 1));
     gl::enable(GL_POINT_SPRITE);
     gl::drawArrays(points_, 0, ITERATIONS);    
