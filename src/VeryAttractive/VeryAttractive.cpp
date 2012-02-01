@@ -45,6 +45,7 @@ private:
 
     gl::Texture particleTexture_;
     gl::VboMesh points_;
+    Timer timer_;
     float cameraRange_;
     float cameraAngle_;
 };
@@ -88,13 +89,11 @@ void Pickover::setup()
         newPoint.y = prevPoint.z * sin(c * prevPoint.x) - cos(d * prevPoint.y);
         newPoint.z = e * sin(prevPoint.x);
         
-        // Apply some noise to break it up a little
-        newPoint += perlin.dfBm(newPoint) * 0.25f;
-        
         // Keep track of the maximum range for when we set the camera up
         cameraRange_ = max(cameraRange_, newPoint.lengthSquared());
 
-        p.push_back(newPoint);
+        // Apply some noise to break it up a little
+        p.push_back(newPoint + perlin.dfBm(newPoint) * CHAOS);
         indices.push_back(i);
         prevPoint = newPoint;
     }
@@ -112,7 +111,10 @@ void Pickover::setup()
 
 void Pickover::update()
 {
-    float msecs = 16.67f;
+    timer_.stop();
+    float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
+    timer_.start();
+
     cameraAngle_ += CAMERA_SPEED * msecs;
     if (cameraAngle_ > M_PI * 2)
         cameraAngle_ -= M_PI * 2;
