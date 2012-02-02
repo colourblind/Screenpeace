@@ -63,7 +63,8 @@ void Pickover::setup()
     particleTexture_ = gl::Texture(loadImage(loadResource(RES_PARTICLE_TEXTURE)), format);
     
     Rand::randomize();
-    Perlin perlin(3);
+    Perlin perlin(4);
+    perlin.setSeed(Rand::randInt());
 
     // Generate our parameters
     float a = 2.24f;
@@ -80,7 +81,7 @@ void Pickover::setup()
 
     Vec3f prevPoint;
     p.push_back(prevPoint);
-    colours.push_back(ColorA(1, 1, 1, 0.1f));
+    colours.push_back(ColorA(1, 1, 1, ALPHA));
     for (unsigned int i = 1; i < ITERATIONS; i ++)
     {
         // Generate new point's position
@@ -99,10 +100,9 @@ void Pickover::setup()
 
         // Apply some noise to break it up a little
         Vec3f noise = perlin.dfBm(newPoint);
-        Vec3f colourNoise = perlin.dfBm(newPoint * COLOUR_MAP_SCALE);
+        Vec3f colourNoise = perlin.dfBm((newPoint + COLOUR_MAP_OFFSET) * COLOUR_MAP_SCALE) * CHAOS;
         colourNoise.normalize();
-        float m = 1.0f; //max(colourNoise.x, max(colourNoise.y, colourNoise.z));
-        ColorA colour(colourNoise.x / m, colourNoise.y / m, colourNoise.z / m, ALPHA);
+        ColorA colour(colourNoise.x, colourNoise.y, colourNoise.z, ALPHA);
         
         p.push_back(newPoint + noise * CHAOS);
         colours.push_back(colour);
