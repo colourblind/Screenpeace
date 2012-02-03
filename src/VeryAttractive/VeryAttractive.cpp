@@ -48,10 +48,6 @@ private:
     Timer timer_;
     float cameraRange_;
     float cameraAngle_;
-
-    Vec3f lightPos[2];
-    Color lightCol[2];
-
 };
 
 void Pickover::setup()
@@ -70,7 +66,11 @@ void Pickover::setup()
     Perlin perlin(4);
     perlin.setSeed(Rand::randInt());
 
-    for (int i = 0; i < 2; i ++)
+    int lightNum = Rand::randInt(3) + 1;
+    Vec3f *lightPos = new Vec3f[lightNum];
+    Color *lightCol = new Color[lightNum];
+
+    for (int i = 0; i < lightNum; i ++)
     {
         lightPos[i] = Vec3f(Rand::randFloat(-1.5, 1.5), Rand::randFloat(-1.5, 1.5), Rand::randFloat(-1.5, 1.5));
         Color col = Color(Rand::randFloat(0, 1), Rand::randFloat(0, 1), Rand::randFloat(0, 1));
@@ -111,17 +111,21 @@ void Pickover::setup()
 
         // Apply some noise to break it up a little
         Vec3f noise = perlin.dfBm(newPoint);
-        ColorA colour(0, 0, 0, ALPHA);
-        for (int j = 0; j < 2; j ++)
+        ColorA colour;
+        for (int j = 0; j < lightNum; j ++)
         {
             float range = lightPos[j].distanceSquared(newPoint + noise * CHAOS) * 6;
             colour += lightCol[j] / range;
+            colour.a = ALPHA;
         }
         
         p.push_back(newPoint + noise * CHAOS);
         colours.push_back(colour);
         prevPoint = newPoint;
     }
+
+    delete[] lightPos;
+    delete[] lightCol;
     
     gl::VboMesh::Layout layout;
 	layout.setStaticPositions();
@@ -159,15 +163,8 @@ void Pickover::draw()
     glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 
     gl::enable(GL_POINT_SPRITE);
+    glPointSize(3.f);
     gl::drawArrays(points_, 0, ITERATIONS);
-
-    particleTexture_.disable();
-    gl::disable(GL_POINT_SPRITE);
-    for (int i = 0; i < 2; i ++)
-    {
-        gl::color(lightCol[i]);
-        gl::drawCube(lightPos[i], Vec3f(0.1f, 0.1f, 0.1f));
-    }
 }
 
 #ifdef SCREENSAVER
