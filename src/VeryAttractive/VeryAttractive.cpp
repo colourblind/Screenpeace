@@ -125,7 +125,7 @@ void Pickover::setup()
         prevPoint = newPoint;
     }
 
-    for (int i = 0; i < ITERATIONS / 10000; i ++)
+    for (int i = 0; i < NUM_CLOUDS; i ++)
     {
         Vec3f pos = Rand::randVec3f();
         largePointsPos_.push_back(pos);
@@ -183,7 +183,7 @@ void Pickover::draw()
     gl::drawArrays(points_, 0, ITERATIONS);
 
     gl::disable(GL_POINT_SPRITE);
-    for (int i = 0; i < ITERATIONS / 50000; i ++)
+    for (int i = 0; i < NUM_CLOUDS; i ++)
     {
         gl::color(largePointsCol_[i]);
         cloudTexture_.enableAndBind();
