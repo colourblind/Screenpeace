@@ -44,7 +44,11 @@ public:
     
 private:
     gl::Texture particleTexture_;
+    gl::Texture cloudTexture_;
     gl::VboMesh points_;
+    vector<Vec3f> largePointsPos_;
+    vector<ColorA> largePointsCol_;
+    vector<float> largePointsRot_;
     Timer timer_;
     float cameraRange_;
     float cameraAngle_;
@@ -61,6 +65,7 @@ void Pickover::setup()
     format.setMagFilter(GL_LINEAR);
     
     particleTexture_ = gl::Texture(loadImage(loadResource(RES_PARTICLE_TEXTURE)), format);
+    cloudTexture_ = gl::Texture(loadImage(loadResource(RES_CLOUD_TEXTURE)), format);
     
     Rand::randomize();
     Perlin perlin(4);
@@ -101,10 +106,6 @@ void Pickover::setup()
         newPoint.x = sin(a * prevPoint.y) - prevPoint.z * cos(b * prevPoint.x);
         newPoint.y = prevPoint.z * sin(c * prevPoint.x) - cos(d * prevPoint.y);
         newPoint.z = e * sin(prevPoint.x);
-        
-        //newPoint.x = sin(a * prevPoint.x) - prevPoint.z * cos(b * prevPoint.y);
-        //newPoint.y = prevPoint.z * sin(c * prevPoint.x) - cos(d * prevPoint.y);
-        //newPoint.z = e / sin(prevPoint.x);
 
         // Keep track of the maximum range for when we set the camera up
         cameraRange_ = max(cameraRange_, newPoint.lengthSquared());
@@ -122,6 +123,21 @@ void Pickover::setup()
         p.push_back(newPoint + noise * CHAOS);
         colours.push_back(colour);
         prevPoint = newPoint;
+    }
+
+    for (int i = 0; i < ITERATIONS / 10000; i ++)
+    {
+        Vec3f pos = Rand::randVec3f();
+        largePointsPos_.push_back(pos);
+        largePointsRot_.push_back(Rand::randFloat(360));
+        ColorA colour;
+        for (int j = 0; j < lightNum; j ++)
+        {
+            float range = lightPos[j].distanceSquared(pos) * 4;
+            colour += lightCol[j] / range;
+            colour.a = 1.f;
+        }
+        largePointsCol_.push_back(colour);
     }
 
     delete[] lightPos;
@@ -154,7 +170,7 @@ void Pickover::draw()
     int windowWidth = getWindowWidth();
     int windowHeight = getWindowHeight();
     CameraPersp camera(windowWidth, windowHeight, 75, 0.001f, 20);
-    camera.lookAt(Vec3f(sin(cameraAngle_), 0, cos(cameraAngle_)) * 3, Vec3f(0, 0, 0));
+    camera.lookAt(Vec3f(sin(cameraAngle_), 0, cos(cameraAngle_)) * 4, Vec3f(0, 0, 0));
     
     gl::clear();
     gl::setMatrices(camera);
@@ -163,8 +179,21 @@ void Pickover::draw()
     glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 
     gl::enable(GL_POINT_SPRITE);
-    glPointSize(3.f);
+    glPointSize(4.f);
     gl::drawArrays(points_, 0, ITERATIONS);
+
+    gl::disable(GL_POINT_SPRITE);
+    for (int i = 0; i < ITERATIONS / 50000; i ++)
+    {
+        gl::color(largePointsCol_[i]);
+        cloudTexture_.enableAndBind();
+        gl::pushModelView();
+        gl::translate(largePointsPos_[i]);
+        gl::rotate(Vec3f(0, cameraAngle_ * 180 / M_PI, 0));
+        gl::rotate(Vec3f(0, 0, largePointsRot_[i]));
+        gl::drawSolidRect(Rectf(-0.4, -0.4, 0.4, 0.4));
+        gl::popModelView();
+    }
 }
 
 #ifdef SCREENSAVER
