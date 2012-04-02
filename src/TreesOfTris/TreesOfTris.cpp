@@ -1,9 +1,11 @@
 #include "cinder/app/AppScreenSaver.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/Camera.h"
+#include "cinder/ImageIo.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Texture.h"
 #include "Constants.h"
 #include "Resources.h"
 
@@ -35,6 +37,7 @@ public:
         colour_ = Color(r, g, b);
         if (level == 0)
             angle_ = targetAngle_;
+        pattern_ = Rand::randInt(3);
     }
     ~Tri() { delete left_; delete right_; }
     
@@ -50,10 +53,13 @@ private:
     float targetAngle_;
     float angle_;
     Color colour_;
+    int pattern_;
 };
 
 float verts[6] = { -0.5f, 0, 0.5f, 0, 0, 0.866025f };
 float normals[9] = { 0, 0, 1, 0, 0, 1, 0, 0, 1 };
+float texCoords[6] = { 0, 0, 5, 0, 2.5f, 8 };
+gl::Texture patterns[3];
 
 class TreesOfTris : public APP_TYPE
 {
@@ -131,13 +137,18 @@ void Tri::Draw()
     gl::rotate(Vec3f(angle_, 0, 0));
     gl::translate(Vec3f(0, PADDING / 2, 0));
 
+    patterns[pattern_].enableAndBind();
+
     if (angle_ < 179)
     {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glVertexPointer(2, GL_FLOAT, 0, verts);
         glNormalPointer(GL_FLOAT, 0, normals);
+        glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 	    glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 	    glDisableClientState(GL_VERTEX_ARRAY);
     }
@@ -171,9 +182,20 @@ void TreesOfTris::setup()
 {
     Rand::randomize();
 
+    gl::Texture::Format format;
+    format.enableMipmapping(true);
+    format.setMinFilter(GL_LINEAR_MIPMAP_NEAREST);
+    format.setMagFilter(GL_LINEAR);
+    format.setWrapS(GL_REPEAT);
+    format.setWrapT(GL_REPEAT);
+    
     initialised_ = false;
 
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
+    patterns[0] = gl::Texture(loadImage(loadResource(RES_NOPATTERN)), format);
+    patterns[1] = gl::Texture(loadImage(loadResource(RES_PATTERN0)), format);
+    patterns[2] = gl::Texture(loadImage(loadResource(RES_PATTERN1)), format);
+
     cameraAngle_ = 0;
 
     gl::enableDepthRead();
