@@ -5,6 +5,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Fbo.h"
 #include "cinder/gl/Texture.h"
 #include "Constants.h"
 #include "Resources.h"
@@ -71,12 +72,19 @@ public:
     virtual void draw();
     
 private:
+    void draw(Camera *cam);
     void CreateTree(int index);
 
     Timer timer_;
     vector<Tri *> objects_;
     vector<Vec3f> translations_;
     gl::GlslProg program_;
+    gl::GlslProg fadeNear_;
+    gl::GlslProg fadeFar_;
+    gl::GlslProg blur_[2];
+    gl::Fbo far_;
+    gl::Fbo near_;
+    gl::Fbo pingPong_[2];
     float cameraAngle_;
     bool initialised_;
 };
@@ -192,6 +200,10 @@ void TreesOfTris::setup()
     initialised_ = false;
 
     program_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_PROGRAM));
+    blur_[0] = gl::GlslProg(loadResource(RES_VERT_DEFAULT), loadResource(RES_FRAG_BLUR_H));
+    blur_[1] = gl::GlslProg(loadResource(RES_VERT_DEFAULT), loadResource(RES_FRAG_BLUR_V));
+    fadeNear_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_FADE_NEAR));
+    fadeFar_ = gl::GlslProg(loadResource(RES_VERT_PROGRAM), loadResource(RES_FRAG_FADE_FAR));
     patterns[0] = gl::Texture(loadImage(loadResource(RES_NOPATTERN)), format);
     patterns[1] = gl::Texture(loadImage(loadResource(RES_PATTERN0)), format);
     patterns[2] = gl::Texture(loadImage(loadResource(RES_PATTERN1)), format);
@@ -200,17 +212,11 @@ void TreesOfTris::setup()
 
     gl::enableDepthRead();
     gl::enableDepthWrite();
+    gl::enableAlphaBlending();
 }
 
 void TreesOfTris::update()
 {
-    if (!initialised_)
-    {
-        for (int i = 0; i < NUM_TREES; i ++)
-            CreateTree(-1);
-        initialised_ = true;
-    }
-
     timer_.stop();
     float msecs = 1000.0f * static_cast<float>(timer_.getSeconds());
     timer_.start();
@@ -231,15 +237,75 @@ void TreesOfTris::update()
 
 void TreesOfTris::draw()
 {
+    if (!initialised_)
+    {
+        for (int i = 0; i < NUM_TREES; i ++)
+            CreateTree(-1);
+
+        int windowWidth = getWindowWidth();
+        int windowHeight = getWindowHeight();
+
+        near_ = gl::Fbo(windowWidth, windowHeight, true, true);
+
+        pingPong_[0] = gl::Fbo(windowWidth, windowHeight, true, true, false);
+        pingPong_[1] = gl::Fbo(windowWidth, windowHeight, true, true, false);
+
+        initialised_ = true;
+    }
+
+    CameraPersp cam(getWindowWidth(), getWindowHeight(), 60, 0.1, 50);
+    cam.lookAt(Vec3f(sin(cameraAngle_) * CAMERA_RANGE, 0, cos(cameraAngle_) * CAMERA_RANGE), Vec3f(0, 0, 0), Vec3f(0, 1, 0));
+    CameraOrtho ortho(0, pingPong_[0].getWidth(), 0, pingPong_[0].getHeight(), -1, 1);
+
+    near_.bindFramebuffer();
     gl::clear();
 
-    CameraPersp cam = CameraPersp(getWindowWidth(), getWindowHeight(), 60, 0.1, 100);
-    cam.lookAt(Vec3f(sin(cameraAngle_) * CAMERA_RANGE, 0, cos(cameraAngle_) * CAMERA_RANGE), Vec3f(0, 0, 0), Vec3f(0, 1, 0));
-    gl::setMatrices(cam);
+    fadeNear_.bind();
+    cam.setNearClip(5);
+    cam.setFarClip(CAMERA_RANGE);
+    draw(&cam);
+
+    fadeFar_.bind();
+    cam.setNearClip(CAMERA_RANGE);
+    cam.setFarClip(CAMERA_RANGE * 2);
+    draw(&cam);
+
+    pingPong_[0].bindFramebuffer();
+    gl::clear();
+    gl::setMatrices(ortho);
+    blur_[0].bind();
+    blur_[0].uniform("textureWidth", (float)near_.getWidth());
+    near_.getTexture().bind();
+    gl::drawSolidRect(Rectf(0, 0, pingPong_[0].getWidth(), pingPong_[0].getHeight()));
+
+    pingPong_[1].bindFramebuffer();
+    gl::clear();
+    gl::setMatrices(ortho);
+    blur_[1].bind();
+    blur_[1].uniform("textureHeight", (float)near_.getHeight());
+    pingPong_[0].getTexture().bind();
+    gl::drawSolidRect(Rectf(0, 0, pingPong_[1].getWidth(), pingPong_[1].getHeight()));
+
+    pingPong_[1].unbindFramebuffer();
+
+    gl::clear();
 
     program_.bind();
-    program_.uniform("cameraPos", cam.getEyePoint());
+    gl::setMatrices(cam);
+    draw(&cam);
+    program_.unbind();
+
+    gl::setMatricesWindow(getWindowWidth(), getWindowHeight());
+    pingPong_[1].getTexture().bind();
+    gl::drawSolidRect(Rectf(0, 0, getWindowWidth(), getWindowHeight()));
+}
+
+void TreesOfTris::draw(Camera *cam)
+{
+    program_.uniform("cameraPos", cam->getEyePoint());
     program_.uniform("lightPos", Vec3f(20, 20, 30));
+
+    gl::setMatrices(*cam);
 
     for (int i = 0; i < objects_.size(); i ++)
     {
