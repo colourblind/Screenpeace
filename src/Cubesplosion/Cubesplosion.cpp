@@ -22,16 +22,19 @@ using namespace std;
 struct Cube
 {
     Cube() { }
-    Cube(Vec3f position, float size, Vec3f parentSpeed) : Position(position), Size(size) { InitAsplode(parentSpeed); }
+    Cube(Vec3f position, float size, Vec3f parentSpeed, Vec3f rotate) : Position(position), Size(size), Rotate(rotate) { InitAsplode(parentSpeed); }
 
     void InitAsplode(Vec3f parentSpeed)
     {
         Velocity = Vec3f(Rand::randFloat(-MAX_ASPLODE_SPEED, MAX_ASPLODE_SPEED), Rand::randFloat(-MAX_ASPLODE_SPEED, MAX_ASPLODE_SPEED), Rand::randFloat(-MAX_ASPLODE_SPEED, MAX_ASPLODE_SPEED)) * Size + parentSpeed;
+        SpinSpeed = Vec3f(Rand::randFloat(-MAX_SPIN_SPEED, MAX_SPIN_SPEED), Rand::randFloat(-MAX_SPIN_SPEED, MAX_SPIN_SPEED), Rand::randFloat(-MAX_SPIN_SPEED, MAX_SPIN_SPEED));
         TimeUntilPop = Rand::randFloat(MIN_EVENT_TIME, MAX_EVENT_TIME);
     }
 
     Vec3f Position;
     Vec3f Velocity;
+    Vec3f Rotate;
+    Vec3f SpinSpeed;
     float Size;
     float TimeUntilPop;
 };
@@ -84,6 +87,7 @@ void Cubesplosion::update()
     {
         Cube *currentCube = (*iter);
         currentCube->Position += currentCube->Velocity * msecs;
+        currentCube->Rotate += currentCube->SpinSpeed * msecs;
         currentCube->TimeUntilPop -= msecs;
 
         if (currentCube->TimeUntilPop < 0 && currentCube->Size > (1.0f / (1 << DIVISIONS)))
@@ -91,13 +95,13 @@ void Cubesplosion::update()
             float half = currentCube->Size / 2;
             float quarter = currentCube->Size / 4;
 
-            Cube *a = new Cube(currentCube->Position + Vec3f(quarter, quarter, quarter), half, currentCube->Velocity);
-            Cube *b = new Cube(currentCube->Position + Vec3f(-quarter, quarter, quarter), half, currentCube->Velocity);
-            Cube *c = new Cube(currentCube->Position + Vec3f(quarter, -quarter, quarter), half, currentCube->Velocity);
-            Cube *d = new Cube(currentCube->Position + Vec3f(-quarter, -quarter, quarter), half, currentCube->Velocity);
-            Cube *e = new Cube(currentCube->Position + Vec3f(quarter, quarter, -quarter), half, currentCube->Velocity);
-            Cube *f = new Cube(currentCube->Position + Vec3f(-quarter, quarter, -quarter), half, currentCube->Velocity);
-            Cube *g = new Cube(currentCube->Position + Vec3f(quarter, -quarter, -quarter), half, currentCube->Velocity);
+            Cube *a = new Cube(currentCube->Position + Vec3f(quarter, quarter, quarter), half, currentCube->Velocity, currentCube->Rotate);
+            Cube *b = new Cube(currentCube->Position + Vec3f(-quarter, quarter, quarter), half, currentCube->Velocity, currentCube->Rotate);
+            Cube *c = new Cube(currentCube->Position + Vec3f(quarter, -quarter, quarter), half, currentCube->Velocity, currentCube->Rotate);
+            Cube *d = new Cube(currentCube->Position + Vec3f(-quarter, -quarter, quarter), half, currentCube->Velocity, currentCube->Rotate);
+            Cube *e = new Cube(currentCube->Position + Vec3f(quarter, quarter, -quarter), half, currentCube->Velocity, currentCube->Rotate);
+            Cube *f = new Cube(currentCube->Position + Vec3f(-quarter, quarter, -quarter), half, currentCube->Velocity, currentCube->Rotate);
+            Cube *g = new Cube(currentCube->Position + Vec3f(quarter, -quarter, -quarter), half, currentCube->Velocity, currentCube->Rotate);
 
             currentCube->Position += Vec3f(-quarter, -quarter, -quarter);
             currentCube->Size = half;
@@ -138,7 +142,12 @@ void Cubesplosion::draw()
     program_.uniform("colour", Vec3f(1, 0, 0));
     program_.uniform("normalFlip", 1.0f);
     for (list<Cube *>::iterator iter = cubes_.begin(); iter != cubes_.end(); iter ++)
-        gl::drawCube((*iter)->Position, Vec3f((*iter)->Size, (*iter)->Size, (*iter)->Size));
+    {
+        gl::pushModelView();
+        gl::rotate((*iter)->Rotate);
+        gl::drawCube(Vec3f((*iter)->Position), Vec3f((*iter)->Size, (*iter)->Size, (*iter)->Size));
+        gl::popModelView();
+    }
 }
 
 void Cubesplosion::Reset()
@@ -148,7 +157,7 @@ void Cubesplosion::Reset()
     cubes_.clear();
 
     Vec3f drift = Vec3f(Rand::randFloat(-MAX_START_SPEED, MAX_START_SPEED), Rand::randFloat(-MAX_START_SPEED, MAX_START_SPEED), Rand::randFloat(-MAX_START_SPEED, MAX_START_SPEED));
-    Cube *cube = new Cube(Vec3f(0, 0, 0), 1, drift);
+    Cube *cube = new Cube(Vec3f(0, 0, 0), 1, drift, Vec3f());
     cubes_.push_back(cube);
 
     timeUntilReset_ = RESET_TIME * 1000;
