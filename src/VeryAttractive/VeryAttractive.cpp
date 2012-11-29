@@ -127,15 +127,15 @@ void Pickover::setup()
 
     for (int i = 0; i < NUM_CLOUDS; i ++)
     {
-        Vec3f pos = Rand::randVec3f();
+        Vec3f pos = Rand::randVec3f() * Rand::randFloat(2);
         largePointsPos_.push_back(pos);
         largePointsRot_.push_back(Rand::randFloat(360));
         ColorA colour;
         for (int j = 0; j < lightNum; j ++)
         {
-            float range = lightPos[j].distanceSquared(pos) * 4;
+            float range = lightPos[j].distanceSquared(pos) * 2;
             colour += lightCol[j] / range;
-            colour.a = 1.f;
+            colour.a = 0.25f;
         }
         largePointsCol_.push_back(colour);
     }
@@ -179,7 +179,7 @@ void Pickover::draw()
     glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 
     gl::enable(GL_POINT_SPRITE);
-    glPointSize(4.f);
+    glPointSize(POINT_SPRITE_SIZE);
     gl::drawArrays(points_, 0, ITERATIONS);
 
     gl::disable(GL_POINT_SPRITE);
@@ -191,7 +191,7 @@ void Pickover::draw()
         gl::translate(largePointsPos_[i]);
         gl::rotate(Vec3f(0, cameraAngle_ * 180 / M_PI, 0));
         gl::rotate(Vec3f(0, 0, largePointsRot_[i]));
-        gl::drawSolidRect(Rectf(-0.4, -0.4, 0.4, 0.4));
+        gl::drawSolidRect(Rectf(-0.75f, -0.75f, 0.75f, 0.75f));
         gl::popModelView();
     }
 }
