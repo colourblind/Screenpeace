@@ -297,6 +297,7 @@ void TreesOfTris::draw()
 
     gl::setMatricesWindow(getWindowWidth(), getWindowHeight());
     pingPong_[1].getTexture().bind();
+    gl::color(Color::white());
     gl::drawSolidRect(Rectf(0, 0, getWindowWidth(), getWindowHeight()));
 }
 
